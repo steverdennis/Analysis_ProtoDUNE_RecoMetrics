@@ -28,8 +28,9 @@ public:
      *  @brief  Constructor
      *
      *  @param  verboseString dscription
+     *  @param  momentum
      */
-    DrawClass(const std::string &verboseString);
+    DrawClass(const std::string &verboseString, const float momentum = 0.f);
 
     /**
      *  @brief  Destructor
@@ -77,7 +78,7 @@ public:
     /**
      *  @brief  Draw all graphs and save plots
      */
-    void Draw();
+    void Draw() const;
 
     /**
      *  @brief  Set whether using log x axis
@@ -265,6 +266,7 @@ private:
     Histo2DVector   m_2Dhistos;      ///< Vector of pointers to Indexed2DHisto
     GraphVector     m_graphs;        ///< Vector of pointers to IndexedGraph
     std::string     m_verboseString; ///< Description of plot
+    float           m_momentum;      ///< Momentum
     bool            m_setLogX;       ///< Is log X axis
     bool            m_setLogY;       ///< Is log Y axis
     bool            m_norm;          ///< Whether to normalise histograms when plotting

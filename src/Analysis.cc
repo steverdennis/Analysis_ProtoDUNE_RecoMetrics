@@ -49,72 +49,112 @@ int main(int argc, char *argv[])
 
     EventClassVector eventClassVector;
 
-    //const int momentum(atoi(argv[1]));
-    const int momentum(5);
+    const int momentum(atoi(argv[1]));
+    //const int momentum(5);
     std::string stringMomenta(Helper::ToString(momentum));
 
     const int tag(2);
     std::string stringTag(Helper::ToString(tag));
 
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_CheatedReco/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_CheatedReco_Job_Number_*.root", "Fully Cheated", momentum);
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_CCCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_CCCC_Job_Number_*.root", "Cheated CRReco, CRTagging, Slicing, SliceID", momentum);
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RCCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RCCC_Job_Number_*.root", "Cheated CRTagging, Slicing, SliceID", momentum);
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRCC_Job_Number_*.root", "Cheated Slicing, SliceID", momentum);
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRRC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRRC_Job_Number_*.root", "Cheated SliceID", momentum);
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRRR/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRRR_Job_Number_*.root", "Standard Reco", momentum);
+//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_CheatedReco/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_CheatedReco_Job_Number_*.root", "Fully Cheated", momentum);
+//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_CCCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_CCCC_Job_Number_*.root", "Cheated CRReco, CRTagging, Slicing, SliceID", momentum);
+//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RCCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RCCC_Job_Number_*.root", "Cheated CRTagging, Slicing, SliceID", momentum);
+//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRCC_Job_Number_*.root", "Cheated Slicing, SliceID", momentum);
+//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRRC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRRC_Job_Number_*.root", "Cheated SliceID", momentum);
+//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRRR/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRRR_Job_Number_*.root", "Standard Reco", momentum);
     eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_BdtBeamParticleId/AnalysisTag3/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_BdtBeamParticleId_Job_Number_*.root", "Bdt Beam Particle Id", momentum);
+//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRRC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRRC_Job_Number_*.root", "Cheated SliceID", momentum);
+
+    std::vector<Particle> particles;
+
+    if (momentum > 0)
+    {
+        particles = {POSITRON, PROTON, ANTIMUON, KAONPLUS, PIPLUS};
+    }
+    else
+    {
+        particles = {ELECTRON, ANTIPROTON, MUON, KAONMINUS, PIMINUS};
+    }
 
     int mcNuanceCode(0), isBeamParticle(0), isCosmicRay(0), nNuMatches(0), nCRMatches(0), eventNumber(0);
     std::vector<int> *mcPrimaryPdg(nullptr), *mcPrimaryNHitsTotal(nullptr), *bestMatchPfoPdg(nullptr), *bestMatchPfoNHitsTotal(nullptr),*bestMatchPfoNSharedHitsTotal(nullptr);
 
-    DrawClass drawClass_BeamParticleEff("Beam Particle Efficiency Vs NHits");
+    DrawClass drawClass_BeamParticleEff("Beam Particle Efficiency Vs NHits", momentum);
     drawClass_BeamParticleEff.SetLogX(true);
     drawClass_BeamParticleEff.SetRange(0.f, 0.f, 0.f, 1.05f);
 
-    DrawClass drawClass_CosmicRayEff("Cosmic Ray Efficiency Vs NHits");
+    DrawClass drawClass_CosmicRayEff("Cosmic Ray Efficiency Vs NHits", momentum);
     drawClass_CosmicRayEff.SetLogX(true);
     drawClass_CosmicRayEff.SetRange(0.f, 0.f, 0.f, 1.05f);
 
-    DrawClass drawClass_BeamParticleNuMatches("Nu Matches Beam Particle");
+    typedef std::map<Particle, DrawClass> ParticleToDrawClassMap;
+    ParticleToDrawClassMap drawClassMap_BeamParticleEff;
+    ParticleToDrawClassMap drawClassMap_BeamParticleComp;
+    ParticleToDrawClassMap drawClassMap_BeamParticlePur;
+
+    for (const Particle &particle : particles)
+    {
+        std::string particleName(Helper::GetParticleName(particle));
+
+        DrawClass drawClass("Beam Particle Efficiency Vs NHits " + particleName, momentum);
+        drawClass.SetLogX(true);
+        drawClass.SetRange(0.f, 0.f, 0.f, 1.05f);
+        drawClassMap_BeamParticleEff.insert(ParticleToDrawClassMap::value_type(particle, drawClass));
+std::cout << momentum << std::endl;
+        DrawClass drawClass_BeamParticleComp_Particle("Beam Particle Completeness" + particleName, momentum);
+        drawClass_BeamParticleComp_Particle.SetLogY(true);
+        drawClass_BeamParticleComp_Particle.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
+        drawClassMap_BeamParticleComp.insert(ParticleToDrawClassMap::value_type(particle, drawClass_BeamParticleComp_Particle));
+
+        DrawClass drawClass_BeamParticlePurity_Particle("Beam Particle Purity" + particleName, momentum);
+        drawClass_BeamParticlePurity_Particle.SetLogY(true);
+        drawClass_BeamParticlePurity_Particle.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
+        drawClassMap_BeamParticlePur.insert(ParticleToDrawClassMap::value_type(particle, drawClass_BeamParticlePurity_Particle));
+    }
+
+    DrawClass drawClass_BeamParticleNuMatches("Nu Matches Beam Particle", momentum);
     drawClass_BeamParticleNuMatches.SetRange(0.f, 5.f, 0.1f, 10000.f);
     drawClass_BeamParticleNuMatches.SetLogY(true);
     drawClass_BeamParticleNuMatches.Normalise(false);
 
-    DrawClass drawClass_BeamParticleNuMatchesEvent("Nu Matches Beam Particle Event");
+    DrawClass drawClass_BeamParticleNuMatchesEvent("Nu Matches Beam Particle Event", momentum);
     drawClass_BeamParticleNuMatchesEvent.SetRange(0.f, 5.f, 0.f, 5.f);
 
-    DrawClass drawClass_CosmicRayCRMatches("CR Matches Cosmic Ray");
+    DrawClass drawClass_CosmicRayCRMatches("CR Matches Cosmic Ray", momentum);
     drawClass_CosmicRayCRMatches.SetRange(0.f, 5.f, 0.1f, 1e6);
     drawClass_CosmicRayCRMatches.SetLogY(true);
     drawClass_CosmicRayCRMatches.Normalise(false);
 
-    DrawClass drawClass_CosmicRayCRMatchesEvent("CR Matches Cosmic Ray Event");
+    DrawClass drawClass_CosmicRayCRMatchesEvent("CR Matches Cosmic Ray Event", momentum);
     drawClass_CosmicRayCRMatchesEvent.SetRange(0.f, 125.f, 0.f, 125.f);
 
-    DrawClass drawClass_BeamParticleComp("Beam Particle Completeness");
+    DrawClass drawClass_BeamParticleComp("Beam Particle Completeness", momentum);
     drawClass_BeamParticleComp.SetLogY(true);
     drawClass_BeamParticleComp.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
-    DrawClass drawClass_BeamParticlePurity("Beam Particle Purity");
+    DrawClass drawClass_BeamParticlePurity("Beam Particle Purity", momentum);
     drawClass_BeamParticlePurity.SetLogY(true);
     drawClass_BeamParticlePurity.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
-    DrawClass drawClass_CosmicRayComp("Cosmic Ray Completeness");
+    DrawClass drawClass_CosmicRayComp("Cosmic Ray Completeness", momentum);
     drawClass_CosmicRayComp.SetLogY(true);
     drawClass_CosmicRayComp.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
-    DrawClass drawClass_CosmicRayPurity("Cosmic Ray Purity");
+    DrawClass drawClass_CosmicRayPurity("Cosmic Ray Purity", momentum);
     drawClass_CosmicRayPurity.SetLogY(true);
     drawClass_CosmicRayPurity.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
-    DrawClass drawClass_BeamParticleCompPurity("Beam Particle Completeness Purity");
+    DrawClass drawClass_BeamParticleCompPurity("Beam Particle Completeness Purity", momentum);
     drawClass_BeamParticleCompPurity.SetRange(0.f, 1.1f, 0.f, 1.1f);
 
     const int nBins(25), maxBin(4);
 
     for (EventClass &eventClass : eventClassVector)
     {
-        // Beam Efficiency vs NHits 
+        int nBeamParticles(0), nBeamParticleMatches(0);
+        int nCosmic(0), nCosmicMatches(0);
+
+        // Beam Efficiency vs NHits
         TH1F *pTH1F_BeamMCPrimaryNHitsTotal = new TH1F("BeamMCPrimaryNHitsTotal", "", nBins, 0, maxBin);
         Helper::Format(pTH1F_BeamMCPrimaryNHitsTotal);
         Helper::BinLogX(pTH1F_BeamMCPrimaryNHitsTotal);
@@ -127,7 +167,52 @@ int main(int argc, char *argv[])
         pTH1F_BeamMCPrimaryNHitsTotal_Matched->GetXaxis()->SetTitle("Number of Hits");
         pTH1F_BeamMCPrimaryNHitsTotal_Matched->SetLineColor(kBlue);
 
-        // Cosmic Efficiency vs NHits 
+        typedef std::map<Particle, TH1F*> ParticleToHistMap;
+        ParticleToHistMap particleToHistMap_BeamMCPrimaryNHitsTotal;
+        ParticleToHistMap particleToHistMap_BeamMCPrimaryNHitsTotal_Matched;
+        ParticleToHistMap particleToHistMap_BeamParticleCompleteness;
+        ParticleToHistMap particleToHistMap_BeamParticlePurity;
+
+        for (const Particle &particle : particles)
+        {
+            std::string particleName(Helper::GetParticleName(particle));
+
+            std::string histName("BeamMCPrimaryNHitsTotal_" + particleName);
+            TH1F *pTH1F_BeamMCPrimaryNHitsTotal_Particle = new TH1F(histName.c_str(), "", nBins, 0, maxBin);
+            Helper::Format(pTH1F_BeamMCPrimaryNHitsTotal_Particle);
+            Helper::BinLogX(pTH1F_BeamMCPrimaryNHitsTotal_Particle);
+            pTH1F_BeamMCPrimaryNHitsTotal_Particle->GetXaxis()->SetTitle("Number of Hits");
+            pTH1F_BeamMCPrimaryNHitsTotal_Particle->SetLineColor(kRed);
+            particleToHistMap_BeamMCPrimaryNHitsTotal.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamMCPrimaryNHitsTotal_Particle));
+
+            std::string histNameMatched("BeamMCPrimaryNHitsTotal_Matched_" + particleName);
+            TH1F *pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle = new TH1F(histNameMatched.c_str(), "", nBins, 0, maxBin);
+            Helper::Format(pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle);
+            Helper::BinLogX(pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle);
+            pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle->GetXaxis()->SetTitle("Number of Hits");
+            pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle->SetLineColor(kBlue);
+            particleToHistMap_BeamMCPrimaryNHitsTotal_Matched.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle));
+
+            // Beam Completeness
+            histName = "BeamParticleCompleteness_" + particleName;
+            TH1F *pTH1F_BeamParticleCompleteness_Particle = new TH1F(histName.c_str(), "", nBins, 0, 1.f);
+            Helper::Format(pTH1F_BeamParticleCompleteness_Particle);
+            pTH1F_BeamParticleCompleteness_Particle->GetXaxis()->SetTitle("Completeness");
+            pTH1F_BeamParticleCompleteness_Particle->GetYaxis()->SetTitle("Fraction of Events");
+            pTH1F_BeamParticleCompleteness_Particle->SetLineColor(kBlue);
+            particleToHistMap_BeamParticleCompleteness.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamParticleCompleteness_Particle));
+
+            // Beam Purity
+            histName = "BeamParticlePurity_" + particleName;
+            TH1F *pTH1F_BeamParticlePurity_Particle = new TH1F(histName.c_str(), "", nBins, 0, 1.f);
+            Helper::Format(pTH1F_BeamParticlePurity_Particle);
+            pTH1F_BeamParticlePurity_Particle->GetXaxis()->SetTitle("Purity");
+            pTH1F_BeamParticlePurity_Particle->GetYaxis()->SetTitle("Fraction of Events");
+            pTH1F_BeamParticlePurity_Particle->SetLineColor(kBlue);
+            particleToHistMap_BeamParticlePurity.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamParticlePurity_Particle));
+        }
+
+        // Cosmic Efficiency vs NHits
         TH1F *pTH1F_CosmicMCPrimaryNHitsTotal = new TH1F("CosmicMCPrimaryNHitsTotal", "", nBins, 0, maxBin);
         Helper::Format(pTH1F_CosmicMCPrimaryNHitsTotal);
         Helper::BinLogX(pTH1F_CosmicMCPrimaryNHitsTotal);
@@ -257,12 +342,21 @@ int main(int argc, char *argv[])
             // Beam - must access via nuance code to get target beam (2001) as opposed to background beam (2000)
             if (2001 == mcNuanceCode)
             {
+                nBeamParticles++;
+
                 pTH1F_BeamMCPrimaryNHitsTotal->Fill(nMCHits);
                 pTH1F_BeamParticleNuMatches->Fill(nNuMatches);
 
+                Particle particle(Helper::GetParticleType(mcPrimaryPdg->at(0))); // Should check first, but shouldn't break
+                TH1F *pTH1F_BeamMCPrimaryNHitsTotal_Particle = particleToHistMap_BeamMCPrimaryNHitsTotal.at(particle);
+                TH1F *pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle = particleToHistMap_BeamMCPrimaryNHitsTotal_Matched.at(particle);
+                pTH1F_BeamMCPrimaryNHitsTotal_Particle->Fill(nMCHits);
+
                 if (nNuMatches > 0)
                 {
+                    nBeamParticleMatches++;
                     pTH1F_BeamMCPrimaryNHitsTotal_Matched->Fill(nMCHits);
+                    pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle->Fill(nMCHits);
                 }
 
                 float completeness(0.f), purity(0.f);
@@ -270,8 +364,11 @@ int main(int argc, char *argv[])
                 {
                     completeness = (float)(bestMatchPfoNSharedHitsTotal->at(0))/(float)(mcPrimaryNHitsTotal->at(0));
                     pTH1F_BeamParticleCompleteness->Fill(completeness - std::numeric_limits<float>::epsilon());
+                    particleToHistMap_BeamParticleCompleteness.at(particle)->Fill(completeness - std::numeric_limits<float>::epsilon());;
+
                     purity = (float)(bestMatchPfoNSharedHitsTotal->at(0))/(float)(bestMatchPfoNHitsTotal->at(0));
                     pTH1F_BeamParticlePurity->Fill(purity - std::numeric_limits<float>::epsilon());
+                    particleToHistMap_BeamParticlePurity.at(particle)->Fill(purity - std::numeric_limits<float>::epsilon());
                 }
                 else if (0 == bestMatchPfoNSharedHitsTotal->size())
                 {
@@ -287,11 +384,14 @@ int main(int argc, char *argv[])
             // Cosmics
             else if (isCosmicRay)
             {
+                nCosmic++;
+
                 pTH1F_CosmicMCPrimaryNHitsTotal->Fill(nMCHits);
                 pTH1F_CosmicRayCRMatches->Fill(nCRMatches);
 
                 if (nCRMatches > 0)
                 {
+                    nCosmicMatches++;
                     pTH1F_CosmicMCPrimaryNHitsTotal_Matched->Fill(nMCHits);
                 }
 
@@ -323,6 +423,21 @@ int main(int argc, char *argv[])
         pTGraphErrors_BeamNHitsEfficiency->GetYaxis()->SetRangeUser(0,1);
         pTGraphErrors_BeamNHitsEfficiency->GetYaxis()->SetDecimals();
         drawClass_BeamParticleEff.AddGraph(pTGraphErrors_BeamNHitsEfficiency, eventClass.GetDescription());
+
+        for (const Particle &particle : particles)
+        {
+            std::string particleName(Helper::GetParticleName(particle));
+            TGraphErrors *pTGraphErrors_BeamNHitsEfficiency_Particle  = Helper::MakeEfficiency(particleToHistMap_BeamMCPrimaryNHitsTotal.at(particle), particleToHistMap_BeamMCPrimaryNHitsTotal_Matched.at(particle), "BeamNHitsEfficiency" + particleName);
+            pTGraphErrors_BeamNHitsEfficiency_Particle->GetXaxis()->SetTitle("Number of Hits");
+            pTGraphErrors_BeamNHitsEfficiency_Particle->GetYaxis()->SetTitle("Efficiency");
+            pTGraphErrors_BeamNHitsEfficiency_Particle->GetYaxis()->SetRangeUser(0,1);
+            pTGraphErrors_BeamNHitsEfficiency_Particle->GetYaxis()->SetDecimals();
+            drawClassMap_BeamParticleEff.at(particle).AddGraph(pTGraphErrors_BeamNHitsEfficiency_Particle, eventClass.GetDescription());
+            delete pTGraphErrors_BeamNHitsEfficiency_Particle;
+
+            drawClassMap_BeamParticleComp.at(particle).AddHisto(particleToHistMap_BeamParticleCompleteness.at(particle), eventClass.GetDescription());
+            drawClassMap_BeamParticlePur.at(particle).AddHisto(particleToHistMap_BeamParticlePurity.at(particle), eventClass.GetDescription());
+        }
 
         TGraphErrors *pTGraphErrors_CosmicNHitsEfficiency = Helper::MakeEfficiency(pTH1F_CosmicMCPrimaryNHitsTotal, pTH1F_CosmicMCPrimaryNHitsTotal_Matched, "CosmicNHitsEfficiency");
         Helper::Format(pTGraphErrors_CosmicNHitsEfficiency);
@@ -360,6 +475,32 @@ int main(int argc, char *argv[])
         delete pTH1F_CosmicRayCRMatches;
         delete pTH2F_CosmicRayCRMatchesEvent;
         delete pTH2F_BeamParticleCompletenessPurity;
+
+        for (const auto &iter : particleToHistMap_BeamMCPrimaryNHitsTotal)
+            delete iter.second;
+        for (const auto &iter : particleToHistMap_BeamMCPrimaryNHitsTotal_Matched)
+            delete iter.second;
+        for (const auto &iter : particleToHistMap_BeamParticleCompleteness)
+            delete iter.second;
+        for (const auto &iter : particleToHistMap_BeamParticlePurity)
+            delete iter.second;
+
+        std::cout << "Event Description : " << eventClass.GetDescription() << std::endl;
+        std::cout << "nBeamParticles " << nBeamParticles << std::endl;
+        std::cout << "nBeamParticleMatches " << nBeamParticleMatches << std::endl;
+        const float efficiency(static_cast<float>(nBeamParticleMatches)/static_cast<float>(nBeamParticles));
+        std::cout << "Efficiency " << efficiency << std::endl;
+        const float efficiencyError(std::sqrt(efficiency * (1-efficiency) / static_cast<float>(nBeamParticles)));
+        std::cout << "Efficiency Error " << efficiencyError << std::endl;
+        std::cout << "Efficiency [%] " << efficiency*100.f << "+-" << efficiencyError*100.f << std::endl;
+
+        std::cout << "nCosmic " << nCosmic << std::endl;
+        std::cout << "nCosmicMatches " << nCosmicMatches << std::endl;
+        const float efficiency2(static_cast<float>(nCosmicMatches)/static_cast<float>(nCosmic));
+        std::cout << "Efficiency " << efficiency2 << std::endl;
+        const float efficiencyError2(std::sqrt(efficiency * (1-efficiency) / static_cast<float>(nCosmic)));
+        std::cout << "Efficiency Error " << efficiencyError2 << std::endl;
+        std::cout << "Efficiency [%] " << efficiency2*100.f << "+-" << efficiencyError2*100.f << std::endl;
     }
 
     drawClass_BeamParticleEff.Draw();
@@ -373,6 +514,13 @@ int main(int argc, char *argv[])
     drawClass_BeamParticleCompPurity.Draw();
     drawClass_BeamParticleNuMatchesEvent.Draw();
     drawClass_CosmicRayCRMatchesEvent.Draw();
+
+    for (const auto &iter : drawClassMap_BeamParticleEff)
+        iter.second.Draw();
+    for (const auto &iter : drawClassMap_BeamParticleComp)
+        iter.second.Draw();
+    for (const auto &iter : drawClassMap_BeamParticlePur)
+        iter.second.Draw();
 
     return 0;
 }

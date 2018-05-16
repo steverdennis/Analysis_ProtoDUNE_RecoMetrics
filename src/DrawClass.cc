@@ -15,11 +15,14 @@
 #include "TChain.h"
 #include "TLegend.h"
 
+#include "Helper.h"
+
 namespace analysis
 { 
 
-DrawClass::DrawClass(const std::string &verboseString) : 
+DrawClass::DrawClass(const std::string &verboseString, const float momentum) : 
     m_verboseString(verboseString),
+    m_momentum(momentum),
     m_setLogX(false),
     m_setLogY(false),
     m_norm(true),
@@ -48,6 +51,7 @@ DrawClass::~DrawClass()
 
 DrawClass::DrawClass(const DrawClass &rhs) : 
     m_verboseString(rhs.m_verboseString),
+    m_momentum(rhs.m_momentum),
     m_setLogX(rhs.m_setLogX),
     m_setLogY(rhs.m_setLogY),
     m_norm(rhs.m_norm),
@@ -76,6 +80,7 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
     if (this != &rhs)
     {
         m_verboseString = rhs.m_verboseString;
+        m_momentum = rhs.m_momentum;
         m_setLogX = rhs.m_setLogX;
         m_setLogY = rhs.m_setLogY;
         m_norm = rhs.m_norm;
@@ -102,7 +107,7 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void DrawClass::Draw()
+void DrawClass::Draw() const
 {
     TCanvas *pTCanvas = new TCanvas("Canvas","");
     pTCanvas->Draw();
@@ -118,7 +123,8 @@ void DrawClass::Draw()
     pTCanvas->SetRightMargin(0.15);
     pTCanvas->SetBottomMargin(0.1);
 
-    std::vector<int> colors = {1, 2, 4, 6, 418, 800, 1, 2};
+    //std::vector<int> colors = {1, 2, 4, 6, 418, 800, 1, 2};
+    std::vector<int> colors = {4, 1, 6, 418, 800, 1, 2};
     std::vector<int> linestyle = {1, 1, 1, 1, 1, 1, 2, 2};
 
     if (m_graphs.size() > colors.size())
@@ -192,7 +198,7 @@ void DrawClass::Draw()
     }
     else
     {
-        pTCanvas->Divide(4,2);
+//        pTCanvas->Divide(4,2);
         counter = 1;
 
         if (m_2Dhistos.size() > 8)
@@ -217,6 +223,18 @@ void DrawClass::Draw()
 
     std::string name(m_verboseString);
     name.erase(std::remove(name.begin(), name.end(), ' '), name.end());
+
+std::cout << "m_momentum " << m_momentum << std::endl;
+std::cout << "Helper::ToStringPrecision(m_momentum, 0) " << Helper::ToStringPrecision(m_momentum, 0) << std::endl;
+
+    if (std::fabs(m_momentum) > std::numeric_limits<float>::epsilon())
+    {
+std::cout << "Non-zero momentum detected" << std::endl;
+        name += "_" + Helper::ToStringPrecision(m_momentum, 0) + "_GeV_Beam_Cosmics";
+    }
+
+    std::cout << "Saving name : " << name << std::endl;
+
     std::string pdf(name + ".pdf");
     std::string png(name + ".png");
     std::string dotC(name + ".C");

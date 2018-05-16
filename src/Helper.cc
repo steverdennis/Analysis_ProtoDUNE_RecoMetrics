@@ -96,19 +96,19 @@ const char *Helper::GetParticleName(Particle part)
         case POSITRON: return "Positron";
         case PHOTON: return "Photon";
         case MUON: return "Muon";
-        case ANTIMUON: return "Anti-Muon";
+        case ANTIMUON: return "AntiMuon";
         case PROTON: return "Proton";
-        case ANTIPROTON: return "Anti-Proton";
+        case ANTIPROTON: return "AntiProton";
         case NEUTRON: return "Neutron";
-        case ANTINEUTRON: return "Anti-Neutron";
+        case ANTINEUTRON: return "AntiNeutron";
         case NEUTRINO: return "Neutrino";
-        case PIPLUS: return "Pi-Plus";
-        case PIMINUS: return "Pi-Minus";
-        case PIZERO: return "Pi-Zero";
+        case PIPLUS: return "PiPlus";
+        case PIMINUS: return "PiMinus";
+        case PIZERO: return "PiZero";
         case KAON0L: return "KaonOL";
         case KAON0S: return "KaonOS";
-        case KAONPLUS: return "Kaon-Plus";
-        case KAONMINUS: return "Kaon-Minus";
+        case KAONPLUS: return "KaonPlus";
+        case KAONMINUS: return "KaonMinus";
         case OTHER: return "Other";
         default : return "Unknown";
     }
