@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         drawClass.SetLogX(true);
         drawClass.SetRange(0.f, 0.f, 0.f, 1.05f);
         drawClassMap_BeamParticleEff.insert(ParticleToDrawClassMap::value_type(particle, drawClass));
-std::cout << momentum << std::endl;
+
         DrawClass drawClass_BeamParticleComp_Particle("Beam Particle Completeness" + particleName, momentum);
         drawClass_BeamParticleComp_Particle.SetLogY(true);
         drawClass_BeamParticleComp_Particle.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
@@ -127,6 +127,7 @@ std::cout << momentum << std::endl;
 
     DrawClass drawClass_CosmicRayCRMatchesEvent("CR Matches Cosmic Ray Event", momentum);
     drawClass_CosmicRayCRMatchesEvent.SetRange(0.f, 125.f, 0.f, 125.f);
+    drawClass_CosmicRayCRMatchesEvent.SquarePlot(true);
 
     DrawClass drawClass_BeamParticleComp("Beam Particle Completeness", momentum);
     drawClass_BeamParticleComp.SetLogY(true);
@@ -145,7 +146,8 @@ std::cout << momentum << std::endl;
     drawClass_CosmicRayPurity.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
     DrawClass drawClass_BeamParticleCompPurity("Beam Particle Completeness Purity", momentum);
-    drawClass_BeamParticleCompPurity.SetRange(0.f, 1.1f, 0.f, 1.1f);
+    drawClass_BeamParticleCompPurity.SetRange(0.f, 1.f, 0.f, 1.f);
+    drawClass_BeamParticleCompPurity.SquarePlot(true);
 
     const int nBins(25), maxBin(4);
 
@@ -272,8 +274,8 @@ std::cout << momentum << std::endl;
 
         TH2F *pTH2F_CosmicRayCRMatchesEvent = new TH2F("CosmicRayCRMatchesEvent", "", 125, 0.f, 125.f, 125, 0.f, 125.f);
         Helper::Format(pTH2F_CosmicRayCRMatchesEvent);
-        pTH2F_CosmicRayCRMatchesEvent->GetXaxis()->SetTitle("Number of Cosmic Rays");
-        pTH2F_CosmicRayCRMatchesEvent->GetYaxis()->SetTitle("Number of CR Matches");
+        pTH2F_CosmicRayCRMatchesEvent->GetXaxis()->SetTitle("Number of Cosmic-Rays");
+        pTH2F_CosmicRayCRMatchesEvent->GetYaxis()->SetTitle("Number of Reconstructed Cosmic-Ray");
 
         // Beam Completeness Purity
         TH2F *pTH2F_BeamParticleCompletenessPurity = new TH2F("BeamParticleCompletenessPurity","", 20, 0, 1, 20, 0, 1);

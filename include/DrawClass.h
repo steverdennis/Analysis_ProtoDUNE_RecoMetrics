@@ -102,6 +102,13 @@ public:
     void Normalise(bool norm);
 
     /**
+     *  @brief  Set whether to draw a square plot
+     *
+     *  @param squarePlot
+     */
+    void SquarePlot(bool squarePlot);
+
+    /**
      *  @brief  Set axis range
      *
      *  @param  minX
@@ -270,6 +277,7 @@ private:
     bool            m_setLogX;       ///< Is log X axis
     bool            m_setLogY;       ///< Is log Y axis
     bool            m_norm;          ///< Whether to normalise histograms when plotting
+    bool            m_squarePlot;    ///< Draw square plot
     float           m_minX;          ///< Min X
     float           m_maxX;          ///< Max X
     float           m_minY;          ///< Min Y
@@ -319,6 +327,13 @@ inline void DrawClass::SetLogY(bool setLogY)
 inline void DrawClass::Normalise(bool norm)
 {
     m_norm = norm;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
+inline void DrawClass::SquarePlot(bool squarePlot)
+{
+    m_squarePlot = squarePlot;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------

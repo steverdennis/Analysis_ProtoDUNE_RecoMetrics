@@ -18,14 +18,15 @@
 #include "Helper.h"
 
 namespace analysis
-{ 
+{
 
-DrawClass::DrawClass(const std::string &verboseString, const float momentum) : 
+DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_verboseString(verboseString),
     m_momentum(momentum),
     m_setLogX(false),
     m_setLogY(false),
     m_norm(true),
+    m_squarePlot(false),
     m_minX(-std::numeric_limits<float>::max()),
     m_maxX(std::numeric_limits<float>::max()),
     m_minY(-std::numeric_limits<float>::max()),
@@ -49,12 +50,13 @@ DrawClass::~DrawClass()
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-DrawClass::DrawClass(const DrawClass &rhs) : 
+DrawClass::DrawClass(const DrawClass &rhs) :
     m_verboseString(rhs.m_verboseString),
     m_momentum(rhs.m_momentum),
     m_setLogX(rhs.m_setLogX),
     m_setLogY(rhs.m_setLogY),
     m_norm(rhs.m_norm),
+    m_squarePlot(rhs.m_squarePlot),
     m_minX(rhs.m_minX),
     m_maxX(rhs.m_maxX),
     m_minY(rhs.m_minY),
@@ -84,6 +86,7 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
         m_setLogX = rhs.m_setLogX;
         m_setLogY = rhs.m_setLogY;
         m_norm = rhs.m_norm;
+        m_squarePlot = rhs.m_squarePlot;
         m_minX = rhs.m_minX;
         m_maxX = rhs.m_maxX;
         m_minY = rhs.m_minY;
@@ -109,7 +112,13 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
 
 void DrawClass::Draw() const
 {
-    TCanvas *pTCanvas = new TCanvas("Canvas","");
+    int width(700);
+    int height(500);
+
+    if (m_squarePlot)
+        height = 700;
+
+    TCanvas *pTCanvas = new TCanvas("Canvas","",width,height);
     pTCanvas->Draw();
 
     if (m_setLogX)
@@ -118,10 +127,12 @@ void DrawClass::Draw() const
     if (m_setLogY)
         pTCanvas->SetLogy();
 
-    pTCanvas->SetTopMargin(0.2);
-    pTCanvas->SetLeftMargin(0.15);
-    pTCanvas->SetRightMargin(0.15);
-    pTCanvas->SetBottomMargin(0.1);
+    float topMargin(0.2), leftMargin(0.15), rightMargin(0.15), bottomMargin(0.1);
+
+    pTCanvas->SetTopMargin(topMargin);
+    pTCanvas->SetLeftMargin(leftMargin);
+    pTCanvas->SetRightMargin(rightMargin);
+    pTCanvas->SetBottomMargin(bottomMargin);
 
     //std::vector<int> colors = {1, 2, 4, 6, 418, 800, 1, 2};
     std::vector<int> colors = {4, 1, 6, 418, 800, 1, 2};
@@ -216,6 +227,14 @@ void DrawClass::Draw() const
             pTH2F->GetXaxis()->SetDecimals();
             pTH2F->GetYaxis()->SetRangeUser(m_minY,m_maxY);
             pTH2F->GetYaxis()->SetDecimals();
+
+            if (m_squarePlot)
+            {
+                pTH2F->GetYaxis()->SetTitleOffset(1.2);
+                pTH2F->GetYaxis()->SetNdivisions(5);
+                pTH2F->GetXaxis()->SetNdivisions(5);
+            }
+
             pTH2F->Draw("COLZ");
             counter++;
         }
@@ -224,12 +243,8 @@ void DrawClass::Draw() const
     std::string name(m_verboseString);
     name.erase(std::remove(name.begin(), name.end(), ' '), name.end());
 
-std::cout << "m_momentum " << m_momentum << std::endl;
-std::cout << "Helper::ToStringPrecision(m_momentum, 0) " << Helper::ToStringPrecision(m_momentum, 0) << std::endl;
-
     if (std::fabs(m_momentum) > std::numeric_limits<float>::epsilon())
     {
-std::cout << "Non-zero momentum detected" << std::endl;
         name += "_" + Helper::ToStringPrecision(m_momentum, 0) + "_GeV_Beam_Cosmics";
     }
 
@@ -249,7 +264,7 @@ std::cout << "Non-zero momentum detected" << std::endl;
 //------------------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-DrawClass::IndexedGraph::IndexedGraph(TGraphErrors *pTGraphErrors, const std::string &description) : 
+DrawClass::IndexedGraph::IndexedGraph(TGraphErrors *pTGraphErrors, const std::string &description) :
     m_pTGraphErrors(new TGraphErrors(*pTGraphErrors)),
     m_desciption(description)
 {
@@ -270,7 +285,7 @@ DrawClass::IndexedGraph::~IndexedGraph()
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-DrawClass::IndexedGraph::IndexedGraph(const IndexedGraph &rhs) : 
+DrawClass::IndexedGraph::IndexedGraph(const IndexedGraph &rhs) :
     m_desciption(rhs.m_desciption)
 {
     m_pTGraphErrors = new TGraphErrors(*(rhs.m_pTGraphErrors));
