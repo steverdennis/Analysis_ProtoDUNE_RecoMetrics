@@ -21,9 +21,11 @@
 namespace analysis
 {
 
+typedef std::map<int, std::string> IntToStringMap;
+
 class DrawClass
 {
-public: 
+public:
     /**
      *  @brief  Constructor
      *
@@ -117,6 +119,13 @@ public:
      *  @param  maxY
      */
     void SetRange(float minX, float maxX, float minY, float maxY);
+
+    /**
+     *  @brief  Add labels to x axis
+     *
+     *  @param  xAxisLabels map of bin number to label
+     */
+    void AddXAxisLabels(IntToStringMap xAxisLabels);
 
 private:
     /**
@@ -273,6 +282,7 @@ private:
     Histo2DVector   m_2Dhistos;      ///< Vector of pointers to Indexed2DHisto
     GraphVector     m_graphs;        ///< Vector of pointers to IndexedGraph
     std::string     m_verboseString; ///< Description of plot
+    IntToStringMap  m_xAxisLabels;   ///< X axis labels
     float           m_momentum;      ///< Momentum
     bool            m_setLogX;       ///< Is log X axis
     bool            m_setLogY;       ///< Is log Y axis
@@ -344,6 +354,13 @@ inline void DrawClass::SetRange(float minX, float maxX, float minY, float maxY)
    m_maxX = maxX;
    m_minY = minY;
    m_maxY = maxY;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
+inline void DrawClass::AddXAxisLabels(IntToStringMap xAxisLabels)
+{
+    m_xAxisLabels = xAxisLabels;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------

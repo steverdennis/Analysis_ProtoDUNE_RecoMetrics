@@ -52,6 +52,7 @@ DrawClass::~DrawClass()
 
 DrawClass::DrawClass(const DrawClass &rhs) :
     m_verboseString(rhs.m_verboseString),
+    m_xAxisLabels(rhs.m_xAxisLabels),
     m_momentum(rhs.m_momentum),
     m_setLogX(rhs.m_setLogX),
     m_setLogY(rhs.m_setLogY),
@@ -82,6 +83,7 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
     if (this != &rhs)
     {
         m_verboseString = rhs.m_verboseString;
+        m_xAxisLabels = rhs.m_xAxisLabels;
         m_momentum = rhs.m_momentum;
         m_setLogX = rhs.m_setLogX;
         m_setLogY = rhs.m_setLogY;
@@ -192,6 +194,12 @@ void DrawClass::Draw() const
             if (m_norm)
                 pTH1F->Scale(1.f/pTH1F->GetEntries());
 
+            if (!m_xAxisLabels.empty())
+            {
+                for (const auto &labelIter: m_xAxisLabels)
+                    pTH1F->GetXaxis()->SetBinLabel(labelIter.first + 1, labelIter.second.c_str());
+            }
+
             if (initialized)
             {
                 pTH1F->Draw("same");
@@ -233,6 +241,12 @@ void DrawClass::Draw() const
                 pTH2F->GetYaxis()->SetTitleOffset(1.2);
                 pTH2F->GetYaxis()->SetNdivisions(5);
                 pTH2F->GetXaxis()->SetNdivisions(5);
+            }
+
+            if (!m_xAxisLabels.empty())
+            {
+                for (const auto &labelIter: m_xAxisLabels)
+                    pTH2F->GetXaxis()->SetBinLabel(labelIter.first + 1, labelIter.second.c_str());
             }
 
             pTH2F->Draw("COLZ");

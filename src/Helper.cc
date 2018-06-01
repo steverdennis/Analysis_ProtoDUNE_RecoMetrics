@@ -35,6 +35,7 @@ Particle Helper::GetParticleType(int pdg)
     {
         case 11: return ELECTRON;
         case -11: return POSITRON;
+        case 22: return PHOTON;
         case 13: return MUON;
         case -13: return ANTIMUON;
         case 2212: return PROTON;
