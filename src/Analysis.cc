@@ -53,17 +53,11 @@ int main(int argc, char *argv[])
     //const int momentum(5);
     std::string stringMomenta(Helper::ToString(momentum));
 
-    const int tag(2);
-    std::string stringTag(Helper::ToString(tag));
+    //const int tag(2);
+    //std::string stringTag(Helper::ToString(tag));
 
-//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_CheatedReco/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_CheatedReco_Job_Number_*.root", "Fully Cheated", momentum);
-//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_CCCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_CCCC_Job_Number_*.root", "Cheated CRReco, CRTagging, Slicing, SliceID", momentum);
-//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RCCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RCCC_Job_Number_*.root", "Cheated CRTagging, Slicing, SliceID", momentum);
-//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRCC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRCC_Job_Number_*.root", "Cheated Slicing, SliceID", momentum);
-//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRRC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRRC_Job_Number_*.root", "Cheated SliceID", momentum);
-//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRRR/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRRR_Job_Number_*.root", "Standard Reco", momentum);
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_BdtBeamParticleId/AnalysisTag3/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_BdtBeamParticleId_Job_Number_*.root", "Bdt Beam Particle Id", momentum);
-//    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_RRRC/AnalysisTag" + stringTag + "/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_RRRC_Job_Number_*.root", "Cheated SliceID", momentum);
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/June/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc10/larsoft_v06_81_00/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/*.root", "larsoft v06-81-00", momentum);
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_BdtBeamParticleId/AnalysisTag3/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_BdtBeamParticleId_Job_Number_*.root" , "larsoft v06-63-00", momentum);
 
     std::vector<Particle> particles;
 
@@ -148,6 +142,10 @@ int main(int argc, char *argv[])
     DrawClass drawClass_BeamParticleCompPurity("Beam Particle Completeness Purity", momentum);
     drawClass_BeamParticleCompPurity.SetRange(0.f, 1.f, 0.f, 1.f);
     drawClass_BeamParticleCompPurity.SquarePlot(true);
+
+    DrawClass drawClass_CosmicRayCompPurity("Cosmic Ray Completeness Purity", momentum);
+    drawClass_CosmicRayCompPurity.SetRange(0.f, 1.f, 0.f, 1.f);
+    drawClass_CosmicRayCompPurity.SquarePlot(true);
 
     const int nBins(25), maxBin(4);
 
@@ -283,6 +281,12 @@ int main(int argc, char *argv[])
         pTH2F_BeamParticleCompletenessPurity->GetXaxis()->SetTitle("Purity");
         pTH2F_BeamParticleCompletenessPurity->GetYaxis()->SetTitle("Completeness");
 
+        // Cosmic Completeness Purity
+        TH2F *pTH2F_CosmicRayCompletenessPurity = new TH2F("CosmicRayCompletenessPurity","", 20, 0, 1, 20, 0, 1);
+        Helper::Format(pTH2F_CosmicRayCompletenessPurity);
+        pTH2F_CosmicRayCompletenessPurity->GetXaxis()->SetTitle("Purity");
+        pTH2F_CosmicRayCompletenessPurity->GetYaxis()->SetTitle("Completeness");
+
         TChain *pTChain = eventClass.GetTChain();
 
         pTChain->SetBranchAddress("eventNumber", &eventNumber);
@@ -414,7 +418,7 @@ int main(int argc, char *argv[])
                 {
                     std::cout << "Problem matching beam particle to PFO." << std::endl;
                 }
-
+                pTH2F_CosmicRayCompletenessPurity->Fill(purity - std::numeric_limits<float>::epsilon(), completeness - std::numeric_limits<float>::epsilon());
             }
         }
 
@@ -461,6 +465,7 @@ int main(int argc, char *argv[])
         drawClass_CosmicRayCRMatchesEvent.Add2DHisto(pTH2F_CosmicRayCRMatchesEvent, eventClass.GetDescription());
 
         drawClass_BeamParticleCompPurity.Add2DHisto(pTH2F_BeamParticleCompletenessPurity, eventClass.GetDescription());
+        drawClass_CosmicRayCompPurity.Add2DHisto(pTH2F_CosmicRayCompletenessPurity, eventClass.GetDescription());
 
         delete pTH1F_BeamMCPrimaryNHitsTotal;
         delete pTH1F_BeamMCPrimaryNHitsTotal_Matched;
@@ -477,6 +482,7 @@ int main(int argc, char *argv[])
         delete pTH1F_CosmicRayCRMatches;
         delete pTH2F_CosmicRayCRMatchesEvent;
         delete pTH2F_BeamParticleCompletenessPurity;
+        delete pTH2F_CosmicRayCompletenessPurity;
 
         for (const auto &iter : particleToHistMap_BeamMCPrimaryNHitsTotal)
             delete iter.second;
@@ -487,22 +493,22 @@ int main(int argc, char *argv[])
         for (const auto &iter : particleToHistMap_BeamParticlePurity)
             delete iter.second;
 
-        std::cout << "Event Description : " << eventClass.GetDescription() << std::endl;
-        std::cout << "nBeamParticles " << nBeamParticles << std::endl;
-        std::cout << "nBeamParticleMatches " << nBeamParticleMatches << std::endl;
-        const float efficiency(static_cast<float>(nBeamParticleMatches)/static_cast<float>(nBeamParticles));
-        std::cout << "Efficiency " << efficiency << std::endl;
-        const float efficiencyError(std::sqrt(efficiency * (1-efficiency) / static_cast<float>(nBeamParticles)));
-        std::cout << "Efficiency Error " << efficiencyError << std::endl;
-        std::cout << "Efficiency [%] " << efficiency*100.f << "+-" << efficiencyError*100.f << std::endl;
+        std::cout << "Event Description    : " << eventClass.GetDescription() << std::endl;
+        std::cout << "nBeamParticles       : " << nBeamParticles << std::endl;
+        std::cout << "nBeamParticleMatches : " << nBeamParticleMatches << std::endl;
+        const float beamParticleEfficiency(static_cast<float>(nBeamParticleMatches)/static_cast<float>(nBeamParticles));
+        std::cout << "Efficiency           : " << beamParticleEfficiency << std::endl;
+        const float beamParticleEfficiencyError(std::sqrt(beamParticleEfficiency * (1-beamParticleEfficiency) / static_cast<float>(nBeamParticles)));
+        std::cout << "Efficiency Error     : " << beamParticleEfficiencyError << std::endl;
+        std::cout << "Efficiency [%]       : " << beamParticleEfficiency*100.f << "+-" << beamParticleEfficiencyError*100.f << std::endl;
 
-        std::cout << "nCosmic " << nCosmic << std::endl;
-        std::cout << "nCosmicMatches " << nCosmicMatches << std::endl;
-        const float efficiency2(static_cast<float>(nCosmicMatches)/static_cast<float>(nCosmic));
-        std::cout << "Efficiency " << efficiency2 << std::endl;
-        const float efficiencyError2(std::sqrt(efficiency * (1-efficiency) / static_cast<float>(nCosmic)));
-        std::cout << "Efficiency Error " << efficiencyError2 << std::endl;
-        std::cout << "Efficiency [%] " << efficiency2*100.f << "+-" << efficiencyError2*100.f << std::endl;
+        std::cout << "nCosmic              : " << nCosmic << std::endl;
+        std::cout << "nCosmicMatches       : " << nCosmicMatches << std::endl;
+        const float cosmicRayEfficiency(static_cast<float>(nCosmicMatches)/static_cast<float>(nCosmic));
+        std::cout << "Efficiency           : " << cosmicRayEfficiency << std::endl;
+        const float cosmicRayEfficiencyError(std::sqrt(beamParticleEfficiency * (1-beamParticleEfficiency) / static_cast<float>(nCosmic)));
+        std::cout << "Efficiency Error     : " << cosmicRayEfficiencyError << std::endl;
+        std::cout << "Efficiency [%]       : " << cosmicRayEfficiency*100.f << "+-" << cosmicRayEfficiencyError*100.f << std::endl;
     }
 
     drawClass_BeamParticleEff.Draw();
@@ -514,6 +520,7 @@ int main(int argc, char *argv[])
     drawClass_BeamParticleNuMatches.Draw();
     drawClass_CosmicRayCRMatches.Draw();
     drawClass_BeamParticleCompPurity.Draw();
+    drawClass_CosmicRayCompPurity.Draw();
     drawClass_BeamParticleNuMatchesEvent.Draw();
     drawClass_CosmicRayCRMatchesEvent.Draw();
 
