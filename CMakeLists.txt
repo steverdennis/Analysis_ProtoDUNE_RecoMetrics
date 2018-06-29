@@ -26,11 +26,13 @@ ENDFOREACH()
 
 INCLUDE_DIRECTORIES(BEFORE ./include ) # use BEFORE to fix problem on mac osx (case insensitive filesystem)
 
+FILE(GLOB_RECURSE SRCS *.cc)
+
 ### LIBRARY AND TOOLS #######################################################
 
 SET( CMAKE_CXX_FLAGS "-g -Wall -std=c++14" )
 
-ADD_EXECUTABLE(Analysis ./src/Analysis.cc ./src/Style.cc ./src/Helper.cc ./src/EventClass.cc ./src/DrawClass.cc)
+ADD_EXECUTABLE(Analysis ${SRCS})
 
 #ADD_EXECUTABLE(SliceAnalysis ./src/SliceAnalysis.cc ./src/Style.cc ./src/Objects.cc)
 
