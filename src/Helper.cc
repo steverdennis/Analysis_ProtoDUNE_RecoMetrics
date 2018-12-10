@@ -29,6 +29,15 @@ Helper::~Helper()
 
 //==================================================
 
+float Helper::CalculateCosTheta2D(const float x1, const float y1, const float x2, const float y2)
+{
+    const float mag1(std::sqrt(x1*x1+y1*y1));
+    const float mag2(std::sqrt(x2*x2+y2*y2));
+    return (x1*x2 + y1*y2) / (mag1 * mag2);
+}
+
+//==================================================
+
 Particle Helper::GetParticleType(int pdg)
 {
     switch (pdg)
@@ -198,7 +207,7 @@ void Helper::BinLogX(TH1F *pTH1F)
 
 //==================================================
 
-TGraphErrors *Helper::MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, std::string label)
+TGraphErrors *Helper::MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, const std::string &label, const int cut)
 {
     TGraphErrors *pTGraphErrors_Efficiency = new TGraphErrors();
     pTGraphErrors_Efficiency->SetName(label.c_str());
@@ -207,7 +216,7 @@ TGraphErrors *Helper::MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, std
     {
         int binContentAll(pTH1F_Total->GetBinContent(bin));
         int binContentMatched(pTH1F_Matched->GetBinContent(bin));
-        if (binContentAll > 0)
+        if (binContentAll > cut)
         {
             const float efficiency = (float)(binContentMatched)/(float)(binContentAll);
             // Binomial np(1-p)

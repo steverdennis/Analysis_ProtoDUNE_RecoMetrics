@@ -33,6 +33,16 @@ public:
     ~Helper();
 
     /**
+     *  @brief Calculate cos theta in a 2D projection
+     *
+     *  @param x1
+     *  @param y1
+     *  @param x2
+     *  @param y2
+     */
+    static float CalculateCosTheta2D(const float x1, const float y1, const float x2, const float y2);
+
+    /**
      *  @brief Return particle enum from pdg
      *
      *  @param pdg code of target particle
@@ -90,8 +100,9 @@ public:
      *  @param pTH1F_Total historgram of total events 
      *  @param pTH1F_Matched histogram of selected events
      *  @param label for histogram
+     *  @param cut for plotting points
      */
-    static TGraphErrors *MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, std::string label);
+    static TGraphErrors *MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, const std::string &label, const int cut = 0);
 
     /**
      *  @brief Object to string

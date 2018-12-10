@@ -158,7 +158,8 @@ void DrawClass::Draw() const
         for (const auto &iter : m_graphs)
         {
             TGraphErrors *pTGraphErrors(iter->GetGraph());
-            //pTGraphErrors->GetXaxis()->SetRangeUser(m_minX,m_maxX);
+//            pTGraphErrors->GetXaxis()->SetRangeUser(m_minX,m_maxX);
+            pTGraphErrors->GetXaxis()->SetLimits(m_minX,m_maxX);
             pTGraphErrors->GetXaxis()->SetDecimals();
             pTGraphErrors->GetYaxis()->SetRangeUser(m_minY,m_maxY);
             pTGraphErrors->GetYaxis()->SetDecimals();
@@ -217,10 +218,10 @@ void DrawClass::Draw() const
     }
     else
     {
-//        pTCanvas->Divide(4,2);
+        pTCanvas->Divide(3,2);
         counter = 1;
 
-        if (m_2Dhistos.size() > 8)
+        if (m_2Dhistos.size() > 6)
         {
             std::cout << "Need to readjust number of pads in canvas." << std::endl;
             return;
@@ -258,9 +259,7 @@ void DrawClass::Draw() const
     name.erase(std::remove(name.begin(), name.end(), ' '), name.end());
 
     if (std::fabs(m_momentum) > std::numeric_limits<float>::epsilon())
-    {
         name += "_" + Helper::ToStringPrecision(m_momentum, 0) + "_GeV_Beam_Cosmics";
-    }
 
     std::cout << "Saving name : " << name << std::endl;
 

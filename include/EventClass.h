@@ -23,7 +23,7 @@ public:
     /**
      *  @brief  Constructor
      */
-    EventClass(const std::string &rootFilePath, const std::string &verboseString, const int momentum, const std::string treeName = "Validation");
+    EventClass(const std::string &rootFilePath, const std::string &verboseString, const int momentum = 0, const std::string treeName = "Validation");
 
     /**
      *   @brief  Destructor
