@@ -158,6 +158,13 @@ void DrawClass::Draw() const
         for (const auto &iter : m_graphs)
         {
             TGraphErrors *pTGraphErrors(iter->GetGraph());
+
+            if (pTGraphErrors->GetN() == 0)
+            {
+                counter++;
+                continue;
+            }
+
 //            pTGraphErrors->GetXaxis()->SetRangeUser(m_minX,m_maxX);
             pTGraphErrors->GetXaxis()->SetLimits(m_minX,m_maxX);
             pTGraphErrors->GetXaxis()->SetDecimals();
@@ -184,6 +191,13 @@ void DrawClass::Draw() const
         for (const auto &iter : m_histos)
         {
             TH1F *pTH1F(iter->GetHisto());
+
+            if (pTH1F->GetEntries() == 0)
+            {
+                counter++;
+                continue;
+            }
+
             //pTGraphErrors->GetXaxis()->SetRangeUser(m_minX,m_maxX);
             pTH1F->GetXaxis()->SetDecimals();
             pTH1F->GetYaxis()->SetRangeUser(m_minY,m_maxY);
@@ -231,6 +245,13 @@ void DrawClass::Draw() const
         {
             pTCanvas->cd(counter);
             TH2F *pTH2F(iter->Get2DHisto());
+
+            if (pTH2F->GetEntries() == 0)
+            {
+                counter++;
+                continue;
+            }
+
             pTH2F->SetTitle(iter->GetDescription().c_str());
             pTH2F->GetYaxis()->SetRangeUser(m_minX,m_maxX);
             pTH2F->GetXaxis()->SetDecimals();
