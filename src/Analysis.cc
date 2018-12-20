@@ -50,14 +50,12 @@ int main(int argc, char *argv[])
     EventClassVector eventClassVector;
 
     const int momentum(atoi(argv[1]));
-    //const int momentum(5);
     std::string stringMomenta(Helper::ToString(momentum));
 
-    //const int tag(2);
-    //std::string stringTag(Helper::ToString(tag));
-
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/June/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc10/larsoft_v06_81_00/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/*.root", "larsoft v06-81-00", momentum);
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/April/ProtoDUNE_RecoMetrics_BdtBeamParticleId/AnalysisTag3/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/ProtoDUNE_RecoMetrics_BdtBeamParticleId_Job_Number_*.root" , "larsoft v06-63-00", momentum);
+    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc10_Pndr/Beam_Cosmics/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/*.root", "mcc10, Space Charge", momentum);
+    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/" + stringMomenta + "GeV/SpaceCharge/RootFiles/*.root", "mcc11, Space Charge", momentum);
+    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/" + stringMomenta + "GeV/NoSpaceCharge/RootFiles/*.root", "mcc11, No Space Charge", momentum);
+    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/" + stringMomenta + "GeV/FluidFlow/RootFiles/*.root", "mcc11, Fluid Flow", momentum);
 
     std::vector<Particle> particles;
 
@@ -422,13 +420,32 @@ int main(int argc, char *argv[])
             }
         }
 
+        std::cout << "Event Description    : " << eventClass.GetDescription() << std::endl;
+        std::cout << "nBeamParticles       : " << nBeamParticles << std::endl;
+        std::cout << "nBeamParticleMatches : " << nBeamParticleMatches << std::endl;
+        const float beamParticleEfficiency(static_cast<float>(nBeamParticleMatches)/static_cast<float>(nBeamParticles));
+        std::cout << "Efficiency           : " << beamParticleEfficiency << std::endl;
+        const float beamParticleEfficiencyError(std::sqrt(beamParticleEfficiency * (1-beamParticleEfficiency) / static_cast<float>(nBeamParticles)));
+        std::cout << "Efficiency Error     : " << beamParticleEfficiencyError << std::endl;
+        std::cout << "Efficiency [%]       : " << beamParticleEfficiency*100.f << "+-" << beamParticleEfficiencyError*100.f << std::endl;
+        const std::string beamEffStr(Helper::ToStringPrecision(beamParticleEfficiency*100.f, 2) + "#pm" + Helper::ToStringPrecision(beamParticleEfficiencyError*100.f, 2) + "%");
+
+        std::cout << "nCosmic              : " << nCosmic << std::endl;
+        std::cout << "nCosmicMatches       : " << nCosmicMatches << std::endl;
+        const float cosmicRayEfficiency(static_cast<float>(nCosmicMatches)/static_cast<float>(nCosmic));
+        std::cout << "Efficiency           : " << cosmicRayEfficiency << std::endl;
+        const float cosmicRayEfficiencyError(std::sqrt(beamParticleEfficiency * (1-beamParticleEfficiency) / static_cast<float>(nCosmic)));
+        std::cout << "Efficiency Error     : " << cosmicRayEfficiencyError << std::endl;
+        std::cout << "Efficiency [%]       : " << cosmicRayEfficiency*100.f << "+-" << cosmicRayEfficiencyError*100.f << std::endl;
+        const std::string cosmicEffStr(Helper::ToStringPrecision(cosmicRayEfficiency*100.f, 2) + "#pm" + Helper::ToStringPrecision(cosmicRayEfficiencyError*100.f, 2) + "%");
+
         TGraphErrors *pTGraphErrors_BeamNHitsEfficiency = Helper::MakeEfficiency(pTH1F_BeamMCPrimaryNHitsTotal, pTH1F_BeamMCPrimaryNHitsTotal_Matched, "BeamNHitsEfficiency");
         Helper::Format(pTGraphErrors_BeamNHitsEfficiency);
         pTGraphErrors_BeamNHitsEfficiency->GetXaxis()->SetTitle("Number of Hits");
         pTGraphErrors_BeamNHitsEfficiency->GetYaxis()->SetTitle("Efficiency");
         pTGraphErrors_BeamNHitsEfficiency->GetYaxis()->SetRangeUser(0,1);
         pTGraphErrors_BeamNHitsEfficiency->GetYaxis()->SetDecimals();
-        drawClass_BeamParticleEff.AddGraph(pTGraphErrors_BeamNHitsEfficiency, eventClass.GetDescription());
+        drawClass_BeamParticleEff.AddGraph(pTGraphErrors_BeamNHitsEfficiency, eventClass.GetDescription() + ", Eff : " + beamEffStr);
 
         for (const Particle &particle : particles)
         {
@@ -451,7 +468,7 @@ int main(int argc, char *argv[])
         pTGraphErrors_CosmicNHitsEfficiency->GetYaxis()->SetTitle("Efficiency");
         pTGraphErrors_CosmicNHitsEfficiency->GetYaxis()->SetRangeUser(0,1);
         pTGraphErrors_CosmicNHitsEfficiency->GetYaxis()->SetDecimals();
-        drawClass_CosmicRayEff.AddGraph(pTGraphErrors_CosmicNHitsEfficiency, eventClass.GetDescription());
+        drawClass_CosmicRayEff.AddGraph(pTGraphErrors_CosmicNHitsEfficiency, eventClass.GetDescription() + ", Eff : " + cosmicEffStr);
 
         drawClass_BeamParticleComp.AddHisto(pTH1F_BeamParticleCompleteness, eventClass.GetDescription());
         drawClass_BeamParticlePurity.AddHisto(pTH1F_BeamParticlePurity, eventClass.GetDescription());
@@ -492,23 +509,6 @@ int main(int argc, char *argv[])
             delete iter.second;
         for (const auto &iter : particleToHistMap_BeamParticlePurity)
             delete iter.second;
-
-        std::cout << "Event Description    : " << eventClass.GetDescription() << std::endl;
-        std::cout << "nBeamParticles       : " << nBeamParticles << std::endl;
-        std::cout << "nBeamParticleMatches : " << nBeamParticleMatches << std::endl;
-        const float beamParticleEfficiency(static_cast<float>(nBeamParticleMatches)/static_cast<float>(nBeamParticles));
-        std::cout << "Efficiency           : " << beamParticleEfficiency << std::endl;
-        const float beamParticleEfficiencyError(std::sqrt(beamParticleEfficiency * (1-beamParticleEfficiency) / static_cast<float>(nBeamParticles)));
-        std::cout << "Efficiency Error     : " << beamParticleEfficiencyError << std::endl;
-        std::cout << "Efficiency [%]       : " << beamParticleEfficiency*100.f << "+-" << beamParticleEfficiencyError*100.f << std::endl;
-
-        std::cout << "nCosmic              : " << nCosmic << std::endl;
-        std::cout << "nCosmicMatches       : " << nCosmicMatches << std::endl;
-        const float cosmicRayEfficiency(static_cast<float>(nCosmicMatches)/static_cast<float>(nCosmic));
-        std::cout << "Efficiency           : " << cosmicRayEfficiency << std::endl;
-        const float cosmicRayEfficiencyError(std::sqrt(beamParticleEfficiency * (1-beamParticleEfficiency) / static_cast<float>(nCosmic)));
-        std::cout << "Efficiency Error     : " << cosmicRayEfficiencyError << std::endl;
-        std::cout << "Efficiency [%]       : " << cosmicRayEfficiency*100.f << "+-" << cosmicRayEfficiencyError*100.f << std::endl;
     }
 
     drawClass_BeamParticleEff.Draw();
