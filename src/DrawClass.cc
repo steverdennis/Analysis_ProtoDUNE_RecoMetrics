@@ -137,8 +137,8 @@ void DrawClass::Draw() const
     pTCanvas->SetBottomMargin(bottomMargin);
 
     //std::vector<int> colors = {1, 2, 4, 6, 418, 800, 1, 2};
-    std::vector<int> colors = {4, 1, 6, 418, 800, 1, 2};
-    std::vector<int> linestyle = {1, 1, 1, 1, 1, 1, 2, 2};
+    std::vector<int> colors = {4, 1, 6, 418, 800, 2, 4, 1, 6, 418, 800, 2};
+    std::vector<int> linestyle = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2};
 
     if (m_graphs.size() > colors.size())
     {

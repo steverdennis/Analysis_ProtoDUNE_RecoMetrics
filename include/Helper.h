@@ -105,6 +105,16 @@ public:
     static TGraphErrors *MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, const std::string &label, const int cut = 0);
 
     /**
+     *  @brief Get particle type based on cherenkov status and tof
+     *
+     *  @param ckov0Status status of first cherenkov detector
+     *  @param ckov1Status status of second cherenkov detector
+     *  @param momentum beam momentum
+     *  @param tof time of flight
+     */
+    static Particle GetParticle(const int ckov0Status, const int ckov1Status, const float momentum, const float tof);
+
+    /**
      *  @brief Object to string
      *
      *  @param t object

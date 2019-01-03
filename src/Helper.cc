@@ -9,6 +9,7 @@
 #include "Helper.h"
 
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
 #include "TGraphErrors.h"
@@ -196,14 +197,14 @@ void Helper::BinLogX(TH1F *pTH1F)
     float width = (to - from) / nBins;
     float *new_bins = new float[nBins + 1];
 
-    for (int bin = 0; bin <= nBins; bin++) 
+    for (int bin = 0; bin <= nBins; bin++)
     {
         new_bins[bin] = std::pow(10, from + bin * width);
     }
 
     pTAxis->Set(nBins, new_bins);
     delete new_bins;
-} 
+}
 
 //==================================================
 
@@ -239,6 +240,63 @@ TGraphErrors *Helper::MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, con
     pTGraphErrors_Efficiency->GetYaxis()->SetNdivisions(5);
 
     return pTGraphErrors_Efficiency;
+}
+
+//==================================================
+
+Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const float momentum, const float tof)
+{
+    if (momentum < 2.5)
+    {
+        if (ckov0Status == 1)
+        {
+            return ELECTRON;
+        }
+        else if (ckov0Status == 0)
+        {
+            if ((momentum < 1.5 && tof > 170) || (momentum > 1.5 && tof > 160))
+            {
+                return PROTON;
+            }
+            else
+            {
+                return PIPLUS;
+            }
+        }
+    }
+    else if (momentum > 2.5 && momentum < 3.5)
+    {
+        if (ckov0Status == 1 && ckov1Status == 1)
+        {
+            return ELECTRON;
+        }
+        else if (ckov0Status == 1 && ckov1Status == 0)
+        {
+            return PIPLUS;
+        }
+        else if (ckov0Status == 0 && ckov1Status == 0)
+        {
+            return PROTON;
+        }
+    }
+    else if (momentum > 4)
+    {
+        if (ckov0Status == 1 && ckov1Status == 1)
+        {
+            // ATTN: This could be an electron
+            return PIPLUS;
+        }
+        else if (ckov0Status == 1 && ckov1Status == 0)
+        {
+            return KAONPLUS;
+        }
+        else if (ckov0Status == 0 && ckov1Status == 0)
+        {
+            return PROTON;
+        }
+    }
+    std::cout << "ckov0Status : ckov1Status : momentum : tof = " << ckov0Status << " : " << ckov1Status << " : " << momentum << " : " << tof << std::endl;
+    return OTHER;
 }
 
 //==================================================
