@@ -48,10 +48,13 @@ int main(int argc, char *argv[])
     Style();
 
     EventClassVector eventClassVector;
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_Data/AnalysisTag1/Data_Run_5758_Momentum_6GeV/RootFiles/*.root", "Run 5758, 6 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_Data/AnalysisTag1/Data_Run_5777_Momentum_3GeV/RootFiles/*.root", "Run 5777, 3 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_Data/AnalysisTag1/Data_Run_5430_Momentum_2GeV/RootFiles/*.root", "Run 5430, 2 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_Data/AnalysisTag1/Data_Run_5826_Momentum_0p5GeV/RootFiles/*.root", "Run 5826, 0.5 GeV");
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag1/Data_Run_5834_Momentum_0p3GeV/RootFiles/*.root", "Run 5834, 0.3 GeV");
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag1/Data_Run_5826_Momentum_0p5GeV/RootFiles/*.root", "Run 5826, 0.5 GeV");
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag1/Data_Run_5387_Momentum_1GeV/RootFiles/*.root", "Run 5387, 1 GeV");
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag1/Data_Run_5430_Momentum_2GeV/RootFiles/*.root", "Run 5430, 2 GeV");
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag1/Data_Run_5777_Momentum_3GeV/RootFiles/*.root", "Run 5777, 3 GeV");
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag1/Data_Run_5758_Momentum_6GeV/RootFiles/*.root", "Run 5758, 6 GeV");
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag1/Data_Run_5145_Momentum_7GeV/RootFiles/*.root", "Run 5145, 7 GeV");
 
 /*
  isTriggered     = 1
