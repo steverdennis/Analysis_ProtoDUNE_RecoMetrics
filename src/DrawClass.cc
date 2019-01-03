@@ -136,13 +136,15 @@ void DrawClass::Draw() const
     pTCanvas->SetRightMargin(rightMargin);
     pTCanvas->SetBottomMargin(bottomMargin);
 
-    //std::vector<int> colors = {1, 2, 4, 6, 418, 800, 1, 2};
-    std::vector<int> colors = {4, 1, 6, 418, 800, 2, 4, 1, 6, 418, 800, 2};
-    std::vector<int> linestyle = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2};
+    std::vector<int> colors = {1, 2, 4, 6, 7, 418, 800};
+    const int nColors(colors.size());
+    std::vector<int> linestyle = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    const int nStyles(linestyle.size());
 
-    if (m_graphs.size() > colors.size())
+    const int nObjectsPlot(m_graphs.size() + m_histos.size());
+    if (nObjectsPlot > nColors * nStyles)
     {
-        std::cout << "Please add more colours." << std::endl;
+        std::cout << "Add more draw options for disinction." << std::endl;
         return;
     }
 
@@ -165,14 +167,17 @@ void DrawClass::Draw() const
                 continue;
             }
 
+            const int colorInt(counter % nColors);
+            const int styleInt(std::floor(counter / nColors));
+
 //            pTGraphErrors->GetXaxis()->SetRangeUser(m_minX,m_maxX);
             pTGraphErrors->GetXaxis()->SetLimits(m_minX,m_maxX);
             pTGraphErrors->GetXaxis()->SetDecimals();
             pTGraphErrors->GetYaxis()->SetRangeUser(m_minY,m_maxY);
             pTGraphErrors->GetYaxis()->SetDecimals();
-            pTGraphErrors->SetMarkerColor(colors.at(counter));
-            pTGraphErrors->SetLineColor(colors.at(counter));
-            pTGraphErrors->SetLineStyle(linestyle.at(counter));
+            pTGraphErrors->SetMarkerColor(colors.at(colorInt));
+            pTGraphErrors->SetLineColor(colors.at(colorInt));
+            pTGraphErrors->SetLineStyle(linestyle.at(styleInt));
 
             if (initialized)
             {
@@ -198,13 +203,16 @@ void DrawClass::Draw() const
                 continue;
             }
 
+            const int colorInt(counter % nColors);
+            const int styleInt(std::floor(counter / nColors));
+
             //pTGraphErrors->GetXaxis()->SetRangeUser(m_minX,m_maxX);
             pTH1F->GetXaxis()->SetDecimals();
             pTH1F->GetYaxis()->SetRangeUser(m_minY,m_maxY);
             pTH1F->GetYaxis()->SetDecimals();
-            pTH1F->SetMarkerColor(colors.at(counter));
-            pTH1F->SetLineColor(colors.at(counter));
-            pTH1F->SetLineStyle(linestyle.at(counter));
+            pTH1F->SetMarkerColor(colors.at(colorInt));
+            pTH1F->SetLineColor(colors.at(colorInt));
+            pTH1F->SetLineStyle(linestyle.at(styleInt));
 
             if (m_norm)
                 pTH1F->Scale(1.f/pTH1F->GetEntries());
