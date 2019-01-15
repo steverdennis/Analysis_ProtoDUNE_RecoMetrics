@@ -55,12 +55,23 @@ public:
      */
     std::string GetTreeName() const;
 
+    typedef std::vector<std::string> StringVector;
+    /*
+     *  @brief  Convert deliminated string to vector of strings
+     *
+     *  @param  inputString input string
+     *  @param  tokens output vector of strings
+     *  @param  delimiter
+     */
+    void TokenizeString(const std::string &inputString, StringVector &tokens, const std::string &delimiter);
+
 private:
-    std::string m_rootFilePath;  ///< Location of root files
-    std::string m_verboseString; ///< Verbose string describing reconstruction
-    int         m_momentum;      ///< Momentum of beam particles in sample
-    std::string m_treeName;      ///< Name of root tree
-    TChain     *m_pTChain;       ///< TChain of root files
+    std::string  m_rootFilePath;               ///< Location of root files
+    StringVector m_rootFilePaths;              ///< Location of root file paths
+    std::string  m_verboseString;              ///< Verbose string describing reconstruction
+    int          m_momentum;                   ///< Momentum of beam particles in sample
+    std::string  m_treeName;                   ///< Name of root tree
+    TChain      *m_pTChain;                    ///< TChain of root files
 };
 
 typedef std::vector<EventClass> EventClassVector;

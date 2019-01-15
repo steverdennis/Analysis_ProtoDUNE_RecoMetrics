@@ -20,7 +20,11 @@ EventClass::EventClass(const std::string &rootFilePath, const std::string &verbo
     m_treeName(treeName)
 {
     m_pTChain = new TChain(m_treeName.c_str());
-    m_pTChain->Add(m_rootFilePath.c_str());
+
+    StringVector tokens;
+    this->TokenizeString(m_rootFilePath, tokens, ":");
+    for (const std::string token : tokens)
+        m_pTChain->Add(token.c_str());
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -39,7 +43,11 @@ EventClass::EventClass(const EventClass &rhs) :
     m_treeName(rhs.m_treeName)
 {
     m_pTChain = new TChain(m_treeName.c_str());
-    m_pTChain->Add(m_rootFilePath.c_str());
+
+    StringVector tokens;
+    this->TokenizeString(m_rootFilePath, tokens, ":");
+    for (const std::string token : tokens)
+        m_pTChain->Add(token.c_str());
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,10 +61,29 @@ EventClass &EventClass::operator=(const EventClass &rhs)
         m_momentum = rhs.m_momentum;
         m_treeName = rhs.m_treeName;
         m_pTChain = new TChain(m_treeName.c_str());
-        m_pTChain->Add(m_rootFilePath.c_str());
+
+        StringVector tokens;
+        this->TokenizeString(m_rootFilePath, tokens, ":");
+        for (const std::string token : tokens)
+            m_pTChain->Add(token.c_str());
     }
 
     return *this;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
+void EventClass::TokenizeString(const std::string &inputString, StringVector &tokens, const std::string &delimiter)
+{
+    std::string::size_type lastPos = inputString.find_first_not_of(delimiter, 0);
+    std::string::size_type pos     = inputString.find_first_of(delimiter, lastPos);
+
+    while ((std::string::npos != pos) || (std::string::npos != lastPos))
+    {
+        tokens.push_back(inputString.substr(lastPos, pos - lastPos));
+        lastPos = inputString.find_first_not_of(delimiter, pos);
+        pos = inputString.find_first_of(delimiter, lastPos);
+    }
 }
 
 } // namespace analysis
