@@ -43,6 +43,13 @@ public:
     static float CalculateCosTheta2D(const float x1, const float y1, const float x2, const float y2);
 
     /**
+     *  @brief Calculate the full width half maximum for a histogram
+     *
+     *  @param pTH1F target histogram
+     */
+    static float GetFullWidthAtHalfMaximum(TH1F *pTH1F);
+
+    /**
      *  @brief Return particle enum from pdg
      *
      *  @param pdg code of target particle

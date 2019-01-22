@@ -39,6 +39,44 @@ float Helper::CalculateCosTheta2D(const float x1, const float y1, const float x2
 
 //==================================================
 
+float Helper::GetFullWidthAtHalfMaximum(TH1F *pTH1F)
+{
+    float maxBinContent(0.f);
+
+    for (int xBin = 0; xBin < pTH1F->GetNbinsX(); xBin++)
+    {
+        const float binContent(pTH1F->GetBinContent(xBin));
+        if (binContent > maxBinContent)
+            maxBinContent = binContent;
+    }
+
+    float halfMaximum(maxBinContent * 0.5f);
+    float lowHalfMaximum(0.f), highHalfMaximum(0.f);
+
+    for (int xBin = 0; xBin < pTH1F->GetNbinsX(); xBin++)
+    {
+        const float binContent(pTH1F->GetBinContent(xBin));
+        if (binContent > halfMaximum)
+        {
+            lowHalfMaximum = pTH1F->GetBinCenter(xBin);
+            break;
+        }
+    }
+
+    for (int xBin = pTH1F->GetNbinsX(); xBin > 0; xBin--)
+    {
+        const float binContent(pTH1F->GetBinContent(xBin));
+        if (binContent > halfMaximum)
+        {
+            highHalfMaximum = pTH1F->GetBinCenter(xBin);
+            break;
+        }
+    }
+    return (highHalfMaximum - lowHalfMaximum);
+}
+
+//==================================================
+
 Particle Helper::GetParticleType(int pdg)
 {
     switch (pdg)
