@@ -282,6 +282,36 @@ TGraphErrors *Helper::MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, con
 
 //==================================================
 
+TH2F *Helper::MakeEfficiency2D(TH2F *pTH2F_Total, TH2F *pTH2F_Matched, std::string label, const int cut)
+{
+    TH2F *pTH2F = new TH2F(label.c_str(), "", pTH2F_Total->GetXaxis()->GetNbins(), pTH2F_Total->GetXaxis()->GetXmin(),
+        pTH2F_Total->GetXaxis()->GetXmax(), pTH2F_Total->GetYaxis()->GetNbins(), pTH2F_Total->GetYaxis()->GetXmin(),
+        pTH2F_Total->GetYaxis()->GetXmax());
+
+    for (unsigned int xBin = 0; xBin < (unsigned int)(pTH2F_Total->GetNbinsX()); xBin++)
+    {
+        for (unsigned int yBin = 0; yBin < (unsigned int)(pTH2F_Total->GetNbinsY()); yBin++)
+        {
+            const float binContentAll(pTH2F_Total->GetBinContent(xBin, yBin));
+            const float binContentMatched(pTH2F_Matched->GetBinContent(xBin, yBin));
+
+            if (binContentAll > cut)
+            {
+                const float efficiency(binContentMatched/binContentAll);
+                // Binomial np(1-p)
+                //const float efficiencyError(std::sqrt(efficiency*(1-efficiency)/(float)(binContentAll)));
+                pTH2F->SetBinContent(xBin, yBin, efficiency);
+            }
+        }
+    }
+
+    Helper::Format(pTH2F);
+    pTH2F->GetZaxis()->SetTitle("Reconstruction Efficiency");
+    return pTH2F;
+}
+
+//==================================================
+
 Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const float momentum, const float tof)
 {
     if (momentum < 2.5)

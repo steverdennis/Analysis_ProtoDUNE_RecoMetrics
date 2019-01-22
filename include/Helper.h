@@ -13,6 +13,7 @@
 #include "TCanvas.h"
 #include "TGraphErrors.h"
 #include "TH1F.h"
+#include "TH2F.h"
 
 namespace analysis
 {
@@ -120,6 +121,16 @@ public:
      *  @param tof time of flight
      */
     static Particle GetParticle(const int ckov0Status, const int ckov1Status, const float momentum, const float tof);
+
+    /**
+     *  @brief Make an efficiency plot from two 2D histograms
+     *
+     *  @param pTH1F_Total historgram of total events 
+     *  @param pTH1F_Matched histogram of selected events
+     *  @param label for histogram
+     *  @param cut min nEntries in histogram to use for calculating efficiency
+     */
+    static TH2F *MakeEfficiency2D(TH2F *pTH2F_Total, TH2F *pTH2F_Matched, std::string label, const int cut = 0);
 
     /**
      *  @brief Object to string
