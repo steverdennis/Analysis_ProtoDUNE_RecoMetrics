@@ -140,6 +140,8 @@ void DrawClass::Draw() const
     const int nColors(colors.size());
     std::vector<int> linestyle = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     const int nStyles(linestyle.size());
+//    std::vector<int> fillStyle = {3001, 3002};
+//    const int nFills(fillStyle.size());
 
     const int nObjectsPlot(m_graphs.size() + m_histos.size());
     if (nObjectsPlot > nColors * nStyles)
@@ -212,7 +214,9 @@ void DrawClass::Draw() const
             pTH1F->GetYaxis()->SetDecimals();
             pTH1F->SetMarkerColor(colors.at(colorInt));
             pTH1F->SetLineColor(colors.at(colorInt));
+            pTH1F->SetFillColor(colors.at(colorInt));
             pTH1F->SetLineStyle(linestyle.at(styleInt));
+            pTH1F->SetFillStyle(3001);
 
             if (m_norm)
                 pTH1F->Scale(1.f/pTH1F->GetEntries());
@@ -225,11 +229,11 @@ void DrawClass::Draw() const
 
             if (initialized)
             {
-                pTH1F->Draw("same");
+                pTH1F->Draw("hist same");
             }
             else
             {
-                pTH1F->Draw("");
+                pTH1F->Draw("hist");
                 initialized = true;
             }
 

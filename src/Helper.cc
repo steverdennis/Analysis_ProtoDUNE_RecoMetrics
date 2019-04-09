@@ -241,7 +241,7 @@ void Helper::BinLogX(TH1F *pTH1F)
     }
 
     pTAxis->Set(nBins, new_bins);
-    delete new_bins;
+    delete[] new_bins;
 }
 
 //==================================================
@@ -386,6 +386,21 @@ std::string Helper::ToStringPrecision(const T a_value, const int n)
     out << std::fixed;
     out << std::setprecision(n) << a_value;
     return out.str();
+}
+
+//==================================================
+
+void Helper::TokenizeString(const std::string &inputString, StringVector &tokens, const std::string &delimiter)
+{
+    std::string::size_type lastPos = inputString.find_first_not_of(delimiter, 0);
+    std::string::size_type pos     = inputString.find_first_of(delimiter, lastPos);
+
+    while ((std::string::npos != pos) || (std::string::npos != lastPos))
+    {
+        tokens.push_back(inputString.substr(lastPos, pos - lastPos));
+        lastPos = inputString.find_first_not_of(delimiter, pos);
+        pos = inputString.find_first_of(delimiter, lastPos);
+    }
 }
 
 //==================================================

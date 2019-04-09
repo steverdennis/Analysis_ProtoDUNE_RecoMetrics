@@ -20,6 +20,8 @@ namespace analysis
 
 enum Particle {ELECTRON, POSITRON, PHOTON, MUON, ANTIMUON, PROTON, ANTIPROTON, NEUTRON, ANTINEUTRON, NEUTRINO, PIPLUS, PIMINUS, PIZERO, KAON0L, KAON0S, KAONPLUS, KAONMINUS, OTHER};
 
+typedef std::vector<std::string> StringVector;
+
 class Helper
 {
 public:
@@ -148,6 +150,15 @@ public:
      */
     template<typename T>
     static std::string ToStringPrecision(const T a_value, const int n = 6);
+
+    /**
+     *  @brief  Tokenize string
+     *
+     *  @param inputString
+     *  @param tokens
+     *  @param delimiter
+     */
+    static void TokenizeString(const std::string &inputString, StringVector &tokens, const std::string &delimiter);
 };
 
 } // namespave analysis
