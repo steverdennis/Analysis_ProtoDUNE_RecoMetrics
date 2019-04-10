@@ -121,6 +121,23 @@ public:
     void SetRange(float minX, float maxX, float minY, float maxY);
 
     /**
+     *  @brief  Set legend position
+     *
+     *  @param  minX
+     *  @param  maxX
+     *  @param  minY
+     *  @param  maxY
+     */
+    void SetLegend(float minX, float maxX, float minY, float maxY);
+
+    /**
+     *  @brief  Set nColumns in legend
+     *
+     *  @param  nCol
+     */
+    void SetNColumns(int nCol);
+
+    /**
      *  @brief  Add labels to x axis
      *
      *  @param  xAxisLabels map of bin number to label
@@ -292,6 +309,11 @@ private:
     float           m_maxX;          ///< Max X
     float           m_minY;          ///< Min Y
     float           m_maxY;          ///< Max Y
+    float           m_legLowX;       ///< Low X Legend position
+    float           m_legHighX;      ///< High X Legend position
+    float           m_legLowY;       ///< Low Y Legend position
+    float           m_legHighY;      ///< High Y Legend position
+    int             m_nColumns;      ///< NColumns in legend
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -354,6 +376,23 @@ inline void DrawClass::SetRange(float minX, float maxX, float minY, float maxY)
    m_maxX = maxX;
    m_minY = minY;
    m_maxY = maxY;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void DrawClass::SetLegend(float minX, float maxX, float minY, float maxY)
+{
+    m_legLowX = minX;
+    m_legHighX = maxX;
+    m_legLowY = minY;
+    m_legHighY = maxY;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void DrawClass::SetNColumns(int nCol)
+{
+    m_nColumns = nCol;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
