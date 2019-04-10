@@ -218,7 +218,7 @@ void Helper::Format(T *&pT)
     pT->GetXaxis()->SetTitle("Entries");
     pT->GetXaxis()->SetLabelSize(0.05);
     pT->GetXaxis()->SetTitleSize(0.05);
-    pT->GetYaxis()->SetTitle("Entries");
+    pT->GetYaxis()->SetTitle("Fraction Of Events");
     pT->GetYaxis()->SetLabelSize(0.05);
     pT->GetYaxis()->SetTitleSize(0.05);
 }

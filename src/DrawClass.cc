@@ -30,7 +30,12 @@ DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_minX(-std::numeric_limits<float>::max()),
     m_maxX(std::numeric_limits<float>::max()),
     m_minY(-std::numeric_limits<float>::max()),
-    m_maxY(std::numeric_limits<float>::max())
+    m_maxY(std::numeric_limits<float>::max()),
+    m_legLowX(0.1),
+    m_legHighX(0.825),
+    m_legLowY(0.9),
+    m_legHighY(0.975),
+    m_nColumns(2)
 {
 }
 
@@ -153,9 +158,9 @@ void DrawClass::Draw() const
     bool initialized(false);
     int counter(0);
 
-    TLegend *pTLegend = new TLegend(0.1, 0.825, 0.9, 0.975);
+    TLegend *pTLegend = new TLegend(m_legLowX, m_legLowY, m_legHighX, m_legHighY);
     pTLegend->SetTextSize(0.025);
-    pTLegend->SetNColumns(2);
+    pTLegend->SetNColumns(m_nColumns);
 
     if (m_2Dhistos.empty())
     {
@@ -237,7 +242,7 @@ void DrawClass::Draw() const
                 initialized = true;
             }
 
-            pTLegend->AddEntry(pTH1F, iter->GetDescription().c_str(), "pl");
+            pTLegend->AddEntry(pTH1F, iter->GetDescription().c_str(), "l");
             counter++;
         }
         pTLegend->Draw();
