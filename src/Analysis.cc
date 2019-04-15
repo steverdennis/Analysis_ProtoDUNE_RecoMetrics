@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     std::vector<Particle> particles = {POSITRON, PROTON, ANTIMUON, KAONPLUS, PIPLUS};
 
     int mcNuanceCode(0), isBeamParticle(0), isCosmicRay(0), nNuMatches(0), nCRMatches(0), eventNumber(0);
-    std::vector<int> *mcPrimaryPdg(nullptr), *mcPrimaryNHitsTotal(nullptr), *bestMatchPfoPdg(nullptr), *bestMatchPfoNHitsTotal(nullptr),*bestMatchPfoNSharedHitsTotal(nullptr);
+    std::vector<int> *mcPrimaryPdg(nullptr), *mcPrimaryNHitsTotal(nullptr), *bestMatchPfoPdg(nullptr), *bestMatchPfoNHitsTotal(nullptr),*bestMatchPfoNSharedHitsTotal(nullptr), *bestMatchPfoIsTestBeam(nullptr);
     std::vector<float> *mcPrimaryPX(nullptr), *mcPrimaryPY(nullptr), *mcPrimaryPZ(nullptr);
 
     // Beam
@@ -248,6 +248,7 @@ int main(int argc, char *argv[])
         pTChain->SetBranchAddress("bestMatchPfoPdg", &bestMatchPfoPdg);
         pTChain->SetBranchAddress("bestMatchPfoNHitsTotal", &bestMatchPfoNHitsTotal);
         pTChain->SetBranchAddress("bestMatchPfoNSharedHitsTotal", &bestMatchPfoNSharedHitsTotal);
+        pTChain->SetBranchAddress("bestMatchPfoIsTestBeam", &bestMatchPfoIsTestBeam);
 
         unsigned int nEntries(pTChain->GetEntries());
         for (unsigned int entry = 0; entry < nEntries; entry++)
@@ -281,25 +282,28 @@ int main(int argc, char *argv[])
 //                    pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle->Fill(nMCHits);
                 }
 
-                float completeness(0.f), purity(0.f);
-                if (1 == bestMatchPfoNSharedHitsTotal->size())
+                if (bestMatchPfoIsTestBeam->at(0))
                 {
-                    completeness = (float)(bestMatchPfoNSharedHitsTotal->at(0))/(float)(mcPrimaryNHitsTotal->at(0));
-                    pTH1F_BeamParticleCompleteness->Fill(completeness - std::numeric_limits<float>::epsilon());
-//                    particleToHistMap_BeamParticleCompleteness.at(particle)->Fill(completeness - std::numeric_limits<float>::epsilon());;
+                    float completeness(0.f), purity(0.f);
+                    if (1 == bestMatchPfoNSharedHitsTotal->size())
+                    {
+                        completeness = (float)(bestMatchPfoNSharedHitsTotal->at(0))/(float)(mcPrimaryNHitsTotal->at(0));
+                        pTH1F_BeamParticleCompleteness->Fill(completeness - std::numeric_limits<float>::epsilon());
+//                        particleToHistMap_BeamParticleCompleteness.at(particle)->Fill(completeness - std::numeric_limits<float>::epsilon());;
 
-                    purity = (float)(bestMatchPfoNSharedHitsTotal->at(0))/(float)(bestMatchPfoNHitsTotal->at(0));
-                    pTH1F_BeamParticlePurity->Fill(purity - std::numeric_limits<float>::epsilon());
-//                    particleToHistMap_BeamParticlePurity.at(particle)->Fill(purity - std::numeric_limits<float>::epsilon());
-                }
-                else if (0 == bestMatchPfoNSharedHitsTotal->size())
-                {
-                    pTH1F_BeamParticleCompleteness->Fill(completeness);
-                    pTH1F_BeamParticlePurity->Fill(purity);
-                }
-                else
-                {
-                    std::cout << "Problem matching beam particle to PFO." << std::endl;
+                        purity = (float)(bestMatchPfoNSharedHitsTotal->at(0))/(float)(bestMatchPfoNHitsTotal->at(0));
+                        pTH1F_BeamParticlePurity->Fill(purity - std::numeric_limits<float>::epsilon());
+//                        particleToHistMap_BeamParticlePurity.at(particle)->Fill(purity - std::numeric_limits<float>::epsilon());
+                    }
+                    else if (0 == bestMatchPfoNSharedHitsTotal->size())
+                    {
+                        pTH1F_BeamParticleCompleteness->Fill(completeness);
+                        pTH1F_BeamParticlePurity->Fill(purity);
+                    }
+                    else
+                    {
+                        std::cout << "Problem matching beam particle to PFO." << std::endl;
+                    }
                 }
             }
             // Cosmics
