@@ -153,7 +153,7 @@ void DrawClass::Draw() const
 
     TLegend *pTLegend = new TLegend(0.1, 0.825, 0.9, 0.975);
     pTLegend->SetTextSize(0.025);
-    pTLegend->SetNColumns(2);
+    pTLegend->SetNColumns(1);
 
     if (m_2Dhistos.empty())
     {
@@ -240,7 +240,7 @@ void DrawClass::Draw() const
     }
     else
     {
-        pTCanvas->Divide(3,2);
+        pTCanvas->Divide(3,1);
         counter = 1;
 
         if (m_2Dhistos.size() > 6)
