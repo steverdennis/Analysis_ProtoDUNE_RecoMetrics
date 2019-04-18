@@ -312,6 +312,26 @@ TH2F *Helper::MakeEfficiency2D(TH2F *pTH2F_Total, TH2F *pTH2F_Matched, std::stri
 
 //==================================================
 
+template<typename T>
+void Helper::GetAverage(std::vector<T> vector, float &average, float &stdDev)
+{
+    T sum(0);
+    for (const T iter : vector)
+        sum += iter;
+
+    average = static_cast<float>(sum)/static_cast<float>(vector.size());
+    stdDev = 0.f;
+
+    for (const T iter : vector)
+        stdDev += (iter - average) * (iter - average);
+
+    stdDev /= static_cast<float>(vector.size());
+    stdDev = std::sqrt(stdDev);
+    return;
+}
+
+//==================================================
+
 Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const float momentum, const float tof)
 {
     if (momentum < 2.5)
@@ -401,5 +421,9 @@ template std::string Helper::ToStringPrecision(double, const int);
 template void Helper::Format(TGraphErrors *&pTGraphErrors);
 template void Helper::Format(TH1F *&pTH1F);
 template void Helper::Format(TH2F *&pTH2F);
+
+template void Helper::GetAverage(std::vector<int>, float&, float&);
+template void Helper::GetAverage(std::vector<float>, float&, float&);
+template void Helper::GetAverage(std::vector<double>, float&, float&);
 
 //==================================================

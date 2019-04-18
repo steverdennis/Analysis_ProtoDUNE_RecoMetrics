@@ -118,7 +118,7 @@ public:
      *  @param  minY
      *  @param  maxY
      */
-    void SetRange(float minX, float maxX, float minY, float maxY);
+    void SetRange(const float minX, const float maxX, const float minY, const float maxY);
 
     /**
      *  @brief  Set legend position
@@ -128,7 +128,35 @@ public:
      *  @param  minY
      *  @param  maxY
      */
-    void SetLegend(float minX, float maxX, float minY, float maxY);
+    void SetLegend(const float minX, const float maxX, const float minY, const float maxY);
+
+    /**
+     *   @brief  Set left margin
+     *
+     *   @param  leftMargin
+     */
+    void SetLeftMargin(const float leftMargin);
+
+    /**
+     *   @brief  Set right margin
+     *
+     *   @param  rightMargin
+     */
+    void SetRightMargin(const float rightMargin);
+
+    /**
+     *   @brief  Set top margin
+     *
+     *   @param  topMargin
+     */
+    void SetTopMargin(const float topMargin);
+
+    /**
+     *   @brief  Set bottom margin
+     *
+     *   @param  bottomMargin
+     */
+    void SetBottomMargin(const float bottomMargin);
 
     /**
      *  @brief  Set nColumns in legend
@@ -314,6 +342,10 @@ private:
     float           m_legLowY;       ///< Low Y Legend position
     float           m_legHighY;      ///< High Y Legend position
     int             m_nColumns;      ///< NColumns in legend
+    float           m_leftMargin;    ///< Left margin
+    float           m_rightMargin;   ///< Right margin
+    float           m_topMargin;     ///< Top margin
+    float           m_bottomMargin;  ///< Bottom margin
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -370,7 +402,7 @@ inline void DrawClass::SquarePlot(bool squarePlot)
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-inline void DrawClass::SetRange(float minX, float maxX, float minY, float maxY)
+inline void DrawClass::SetRange(const float minX, const float maxX, const float minY, const float maxY)
 {
    m_minX = minX;
    m_maxX = maxX;
@@ -380,7 +412,7 @@ inline void DrawClass::SetRange(float minX, float maxX, float minY, float maxY)
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
-inline void DrawClass::SetLegend(float minX, float maxX, float minY, float maxY)
+inline void DrawClass::SetLegend(const float minX, const float maxX, const float minY, const float maxY)
 {
     m_legLowX = minX;
     m_legHighX = maxX;
@@ -390,7 +422,35 @@ inline void DrawClass::SetLegend(float minX, float maxX, float minY, float maxY)
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
-inline void DrawClass::SetNColumns(int nCol)
+inline void DrawClass::SetLeftMargin(const float leftMargin)
+{
+    m_leftMargin = leftMargin;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void DrawClass::SetRightMargin(const float rightMargin)
+{
+    m_rightMargin = rightMargin;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void DrawClass::SetTopMargin(const float topMargin)
+{
+    m_topMargin = topMargin;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void DrawClass::SetBottomMargin(const float bottomMargin)
+{
+    m_bottomMargin = bottomMargin;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void DrawClass::SetNColumns(const int nCol)
 {
     m_nColumns = nCol;
 }

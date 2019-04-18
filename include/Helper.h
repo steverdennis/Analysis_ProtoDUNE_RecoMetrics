@@ -113,6 +113,16 @@ public:
     static TGraphErrors *MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, const std::string &label, const int cut = 0);
 
     /**
+     *   @brief Get average of a set of values (and error)
+     *
+     *   @param vector input values
+     *   @param average
+     *   @param stdDev
+     */
+    template<typename T>
+    static void GetAverage(std::vector<T> vector, float &average, float &stdDev);
+
+    /**
      *  @brief Get particle type based on cherenkov status and tof
      *
      *  @param ckov0Status status of first cherenkov detector
