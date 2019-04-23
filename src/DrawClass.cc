@@ -14,6 +14,7 @@
 #include "TCanvas.h"
 #include "TChain.h"
 #include "TLegend.h"
+#include "TPaveText.h"
 
 #include "Helper.h"
 
@@ -35,7 +36,11 @@ DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_legHighX(0.825),
     m_legLowY(0.9),
     m_legHighY(0.975),
-    m_nColumns(2)
+    m_nColumns(2),
+    m_leftMargin(0.15f),
+    m_rightMargin(0.15f),
+    m_topMargin(0.2f),
+    m_bottomMargin(0.1f)
 {
 }
 
@@ -66,7 +71,16 @@ DrawClass::DrawClass(const DrawClass &rhs) :
     m_minX(rhs.m_minX),
     m_maxX(rhs.m_maxX),
     m_minY(rhs.m_minY),
-    m_maxY(rhs.m_maxY)
+    m_maxY(rhs.m_maxY),
+    m_legLowX(rhs.m_legLowX),
+    m_legHighX(rhs.m_legHighX),
+    m_legLowY(rhs.m_legLowY),
+    m_legHighY(rhs.m_legHighY),
+    m_nColumns(rhs.m_nColumns),
+    m_leftMargin(rhs.m_leftMargin),
+    m_rightMargin(rhs.m_rightMargin),
+    m_topMargin(rhs.m_topMargin),
+    m_bottomMargin(rhs.m_bottomMargin)
 {
     for (const auto &iter : rhs.m_graphs)
     {
@@ -98,6 +112,15 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
         m_maxX = rhs.m_maxX;
         m_minY = rhs.m_minY;
         m_maxY = rhs.m_maxY;
+        m_legLowX = rhs.m_legLowX;
+        m_legHighX = rhs.m_legHighX;
+        m_legLowY = rhs.m_legLowY;
+        m_legHighY = rhs.m_legHighY;
+        m_nColumns = rhs.m_nColumns;
+        m_leftMargin = rhs.m_leftMargin;
+        m_rightMargin = rhs.m_rightMargin;
+        m_topMargin = rhs.m_topMargin;
+        m_bottomMargin = rhs.m_bottomMargin;
 
         for (const auto &iter : rhs.m_graphs)
         {
@@ -134,12 +157,10 @@ void DrawClass::Draw() const
     if (m_setLogY)
         pTCanvas->SetLogy();
 
-    float topMargin(0.2), leftMargin(0.15), rightMargin(0.15), bottomMargin(0.1);
-
-    pTCanvas->SetTopMargin(topMargin);
-    pTCanvas->SetLeftMargin(leftMargin);
-    pTCanvas->SetRightMargin(rightMargin);
-    pTCanvas->SetBottomMargin(bottomMargin);
+    pTCanvas->SetTopMargin(m_topMargin);
+    pTCanvas->SetLeftMargin(m_leftMargin);
+    pTCanvas->SetRightMargin(m_rightMargin);
+    pTCanvas->SetBottomMargin(m_bottomMargin);
 
     std::vector<int> colors = {1, 2, 4, 6, 7, 418, 800};
     const int nColors(colors.size());
@@ -245,8 +266,8 @@ void DrawClass::Draw() const
     }
     else
     {
-        pTCanvas->Divide(3,2);
-        counter = 1;
+//        pTCanvas->Divide(3,2);
+//        counter = 1;
 
         if (m_2Dhistos.size() > 6)
         {
@@ -256,7 +277,7 @@ void DrawClass::Draw() const
 
         for (const auto &iter : m_2Dhistos)
         {
-            pTCanvas->cd(counter);
+//            pTCanvas->cd(counter);
             TH2F *pTH2F(iter->Get2DHisto());
 
             if (pTH2F->GetEntries() == 0)
@@ -265,7 +286,7 @@ void DrawClass::Draw() const
                 continue;
             }
 
-            pTH2F->SetTitle(iter->GetDescription().c_str());
+//            pTH2F->SetTitle(iter->GetDescription().c_str());
             pTH2F->GetYaxis()->SetRangeUser(m_minX,m_maxX);
             pTH2F->GetXaxis()->SetDecimals();
             pTH2F->GetYaxis()->SetRangeUser(m_minY,m_maxY);
@@ -273,7 +294,7 @@ void DrawClass::Draw() const
 
             if (m_squarePlot)
             {
-                pTH2F->GetYaxis()->SetTitleOffset(1.2);
+                pTH2F->GetYaxis()->SetTitleOffset(1.4);
                 pTH2F->GetYaxis()->SetNdivisions(5);
                 pTH2F->GetXaxis()->SetNdivisions(5);
             }
@@ -285,6 +306,15 @@ void DrawClass::Draw() const
             }
 
             pTH2F->Draw("COLZ");
+
+            TPaveText *pTPaveText = new TPaveText(m_legLowX, m_legLowY, m_legHighX, m_legHighY, "NDC");
+            pTPaveText->SetTextSize(0.04);
+            pTPaveText->SetFillStyle(0);
+            pTPaveText->SetLineWidth(0);
+            pTPaveText->SetShadowColor(0);
+            pTPaveText->AddText(iter->GetDescription().c_str());
+            pTPaveText->Draw();
+
             counter++;
         }
     }
