@@ -113,14 +113,14 @@ int main(int argc, char *argv[])
         std::string particleName(Helper::GetParticleName(particle));
         DrawClass drawClass("Beam Particle Efficiency Vs Momentum " + particleName);
         drawClass.SetRange(0.f, 8.f, 0.f, 1.05f);
-        drawClass.SetLegend(0.35, 0.65, 0.2, 0.4);
+        drawClass.SetLegend(0.35, 0.65, 0.2, 0.4, Helper::GetParticleString(particle));
         drawClass.SetNColumns(1);
         drawClass.SetBottomMargin(0.15);
         drawClass.SetTopMargin(0.15);
         drawClassMap_BeamParticleEff.insert(ParticleToDrawClassMap::value_type(particle, drawClass));
 
         DrawClass drawClass_OpeningAngle1("Beam Particle Opening Angle" + particleName);
-        drawClass_OpeningAngle1.SetLegend(0.6, 0.8, 0.6, 0.8);
+        drawClass_OpeningAngle1.SetLegend(0.6, 0.8, 0.6, 0.8, Helper::GetParticleString(particle));
         drawClass_OpeningAngle1.SetNColumns(1);
         drawClass_OpeningAngle1.SetBottomMargin(0.15);
         drawClass_OpeningAngle1.SetTopMargin(0.15);
