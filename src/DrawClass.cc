@@ -33,6 +33,7 @@ DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_maxX(std::numeric_limits<float>::max()),
     m_minY(-std::numeric_limits<float>::max()),
     m_maxY(std::numeric_limits<float>::max()),
+    m_legInfo(""),
     m_legLowX(0.1),
     m_legHighX(0.825),
     m_legLowY(0.9),
@@ -80,6 +81,7 @@ DrawClass::DrawClass(const DrawClass &rhs) :
     m_maxX(rhs.m_maxX),
     m_minY(rhs.m_minY),
     m_maxY(rhs.m_maxY),
+    m_legInfo(rhs.m_legInfo),
     m_legLowX(rhs.m_legLowX),
     m_legHighX(rhs.m_legHighX),
     m_legLowY(rhs.m_legLowY),
@@ -125,6 +127,7 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
         m_maxX = rhs.m_maxX;
         m_minY = rhs.m_minY;
         m_maxY = rhs.m_maxY;
+        m_legInfo = rhs.m_legInfo;
         m_legLowX = rhs.m_legLowX;
         m_legHighX = rhs.m_legHighX;
         m_legLowY = rhs.m_legLowY;
@@ -195,8 +198,11 @@ void DrawClass::Draw() const
     int counter(0);
 
     TLegend *pTLegend = new TLegend(m_legLowX, m_legLowY, m_legHighX, m_legHighY);
-    pTLegend->SetTextSize(0.025);
+    pTLegend->SetTextSize(0.04);
     pTLegend->SetNColumns(m_nColumns);
+
+    if (!m_legInfo.empty())
+        pTLegend->SetHeader(m_legInfo.c_str());
 
     if (m_2Dhistos.empty())
     {
@@ -230,7 +236,7 @@ void DrawClass::Draw() const
 
             if (initialized)
             {
-                pTGraphErrors->Draw("same");
+                pTGraphErrors->Draw("same P");
             }
             else
             {
