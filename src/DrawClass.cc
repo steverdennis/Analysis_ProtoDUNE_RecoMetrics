@@ -40,7 +40,11 @@ DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_leftMargin(0.15f),
     m_rightMargin(0.15f),
     m_topMargin(0.2f),
-    m_bottomMargin(0.1f)
+    m_bottomMargin(0.1f),
+    m_titleOffsetXSet(false),
+    m_titleOffsetX(1.f),
+    m_titleOffsetYSet(false),
+    m_titleOffsetY(1.f)
 {
 }
 
@@ -80,7 +84,11 @@ DrawClass::DrawClass(const DrawClass &rhs) :
     m_leftMargin(rhs.m_leftMargin),
     m_rightMargin(rhs.m_rightMargin),
     m_topMargin(rhs.m_topMargin),
-    m_bottomMargin(rhs.m_bottomMargin)
+    m_bottomMargin(rhs.m_bottomMargin),
+    m_titleOffsetXSet(rhs.m_titleOffsetXSet),
+    m_titleOffsetX(rhs.m_titleOffsetX),
+    m_titleOffsetYSet(rhs.m_titleOffsetYSet),
+    m_titleOffsetY(rhs.m_titleOffsetY)
 {
     for (const auto &iter : rhs.m_graphs)
     {
@@ -121,6 +129,10 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
         m_rightMargin = rhs.m_rightMargin;
         m_topMargin = rhs.m_topMargin;
         m_bottomMargin = rhs.m_bottomMargin;
+        m_titleOffsetXSet = rhs.m_titleOffsetXSet;
+        m_titleOffsetX = rhs.m_titleOffsetX;
+        m_titleOffsetYSet = rhs.m_titleOffsetYSet;
+        m_titleOffsetY = rhs.m_titleOffsetY;
 
         for (const auto &iter : rhs.m_graphs)
         {
@@ -205,6 +217,12 @@ void DrawClass::Draw() const
             pTGraphErrors->SetLineColor(colors.at(colorInt));
             pTGraphErrors->SetLineStyle(linestyle.at(styleInt));
 
+            if (m_titleOffsetXSet)
+                pTGraphErrors->GetXaxis()->SetTitleOffset(m_titleOffsetX);
+
+            if (m_titleOffsetYSet)
+                pTGraphErrors->GetYaxis()->SetTitleOffset(m_titleOffsetY);
+
             if (initialized)
             {
                 pTGraphErrors->Draw("same");
@@ -239,6 +257,12 @@ void DrawClass::Draw() const
             pTH1F->SetMarkerColor(colors.at(colorInt));
             pTH1F->SetLineColor(colors.at(colorInt));
             pTH1F->SetLineStyle(linestyle.at(styleInt));
+
+            if (m_titleOffsetXSet)
+                pTH1F->GetXaxis()->SetTitleOffset(m_titleOffsetX);
+
+            if (m_titleOffsetYSet)
+                pTH1F->GetYaxis()->SetTitleOffset(m_titleOffsetY);
 
             if (m_norm)
                 pTH1F->Scale(1.f/pTH1F->GetEntries());
@@ -291,6 +315,12 @@ void DrawClass::Draw() const
             pTH2F->GetXaxis()->SetDecimals();
             pTH2F->GetYaxis()->SetRangeUser(m_minY,m_maxY);
             pTH2F->GetYaxis()->SetDecimals();
+
+            if (m_titleOffsetXSet)
+                pTH2F->GetXaxis()->SetTitleOffset(m_titleOffsetX);
+
+            if (m_titleOffsetYSet)
+                pTH2F->GetYaxis()->SetTitleOffset(m_titleOffsetY);
 
             if (m_squarePlot)
             {
