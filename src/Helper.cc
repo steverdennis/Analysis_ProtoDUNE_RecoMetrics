@@ -318,7 +318,7 @@ Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const
     {
         if (ckov0Status == 1)
         {
-            return ELECTRON;
+            return POSITRON;
         }
         else if (ckov0Status == 0)
         {
@@ -336,7 +336,7 @@ Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const
     {
         if (ckov0Status == 1 && ckov1Status == 1)
         {
-            return ELECTRON;
+            return POSITRON;
         }
         else if (ckov0Status == 1 && ckov1Status == 0)
         {
@@ -344,15 +344,16 @@ Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const
         }
         else if (ckov0Status == 0 && ckov1Status == 0)
         {
-            return PROTON;
+            //  ATTN: This could be a proton or kaon
+            return OTHER;
         }
     }
     else if (momentum > 4)
     {
         if (ckov0Status == 1 && ckov1Status == 1)
         {
-            // ATTN: This could be an electron
-            return PIPLUS;
+            // ATTN: This could be an electron or a pion
+            return OTHER;
         }
         else if (ckov0Status == 1 && ckov1Status == 0)
         {
@@ -363,7 +364,7 @@ Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const
             return PROTON;
         }
     }
-    std::cout << "ckov0Status : ckov1Status : momentum : tof = " << ckov0Status << " : " << ckov1Status << " : " << momentum << " : " << tof << std::endl;
+//    std::cout << "ckov0Status : ckov1Status : momentum : tof = " << ckov0Status << " : " << ckov1Status << " : " << momentum << " : " << tof << std::endl;
     return OTHER;
 }
 

@@ -47,6 +47,8 @@ DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_titleOffsetYSet(false),
     m_titleOffsetY(1.f)
 {
+    // ATTN: Ensures error bars still work with scaling
+    TH1::SetDefaultSumw2(kTRUE);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -232,7 +234,7 @@ void DrawClass::Draw() const
             }
             else
             {
-                pTGraphErrors->Draw("APL");
+                pTGraphErrors->Draw("AP");
                 initialized = true;
             }
 
@@ -257,6 +259,7 @@ void DrawClass::Draw() const
             pTH1F->GetXaxis()->SetDecimals();
             pTH1F->GetYaxis()->SetDecimals();
             pTH1F->SetMarkerColor(colors.at(colorInt));
+            pTH1F->SetMarkerStyle(1);
             pTH1F->SetLineColor(colors.at(colorInt));
             pTH1F->SetLineStyle(linestyle.at(styleInt));
 
@@ -277,17 +280,17 @@ void DrawClass::Draw() const
 
             if (initialized)
             {
-                pTH1F->Draw("same");
+                pTH1F->Draw("E0 same");
             }
             else
             {
-                pTH1F->Draw("");
+                pTH1F->Draw("E0");
 
                 if (m_rangeSet)
                 {
                     pTH1F->SetAxisRange(m_minX,m_maxX, "X");
                     pTH1F->SetAxisRange(m_minY,m_maxY, "Y");
-                    pTH1F->Draw("");
+                    pTH1F->Draw("E0");
                 }
 
                 initialized = true;
