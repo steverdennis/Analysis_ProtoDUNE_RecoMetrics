@@ -28,6 +28,7 @@ DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_setLogY(false),
     m_norm(true),
     m_squarePlot(false),
+    m_rangeSet(false),
     m_minX(-std::numeric_limits<float>::max()),
     m_maxX(std::numeric_limits<float>::max()),
     m_minY(-std::numeric_limits<float>::max()),
@@ -72,6 +73,7 @@ DrawClass::DrawClass(const DrawClass &rhs) :
     m_setLogY(rhs.m_setLogY),
     m_norm(rhs.m_norm),
     m_squarePlot(rhs.m_squarePlot),
+    m_rangeSet(rhs.m_rangeSet),
     m_minX(rhs.m_minX),
     m_maxX(rhs.m_maxX),
     m_minY(rhs.m_minY),
@@ -116,6 +118,7 @@ DrawClass &DrawClass::operator=(const DrawClass &rhs)
         m_setLogY = rhs.m_setLogY;
         m_norm = rhs.m_norm;
         m_squarePlot = rhs.m_squarePlot;
+        m_rangeSet =  rhs.m_rangeSet;
         m_minX = rhs.m_minX;
         m_maxX = rhs.m_maxX;
         m_minY = rhs.m_minY;
@@ -252,7 +255,6 @@ void DrawClass::Draw() const
 
             //pTGraphErrors->GetXaxis()->SetRangeUser(m_minX,m_maxX);
             pTH1F->GetXaxis()->SetDecimals();
-            pTH1F->GetYaxis()->SetRangeUser(m_minY,m_maxY);
             pTH1F->GetYaxis()->SetDecimals();
             pTH1F->SetMarkerColor(colors.at(colorInt));
             pTH1F->SetLineColor(colors.at(colorInt));
@@ -280,6 +282,14 @@ void DrawClass::Draw() const
             else
             {
                 pTH1F->Draw("");
+
+                if (m_rangeSet)
+                {
+                    pTH1F->SetAxisRange(m_minX,m_maxX, "X");
+                    pTH1F->SetAxisRange(m_minY,m_maxY, "Y");
+                    pTH1F->Draw("");
+                }
+
                 initialized = true;
             }
 
@@ -311,9 +321,7 @@ void DrawClass::Draw() const
             }
 
 //            pTH2F->SetTitle(iter->GetDescription().c_str());
-            pTH2F->GetYaxis()->SetRangeUser(m_minX,m_maxX);
             pTH2F->GetXaxis()->SetDecimals();
-            pTH2F->GetYaxis()->SetRangeUser(m_minY,m_maxY);
             pTH2F->GetYaxis()->SetDecimals();
 
             if (m_titleOffsetXSet)
@@ -336,6 +344,13 @@ void DrawClass::Draw() const
             }
 
             pTH2F->Draw("COLZ");
+
+            if (m_rangeSet)
+            {
+                pTH2F->SetAxisRange(m_minX,m_maxX, "X");
+                pTH2F->SetAxisRange(m_minY,m_maxY, "Y");
+                pTH2F->Draw("COLZ");
+            }
 
             TPaveText *pTPaveText = new TPaveText(m_legLowX, m_legLowY, m_legHighX, m_legHighY, "NDC");
             pTPaveText->SetTextSize(0.04);

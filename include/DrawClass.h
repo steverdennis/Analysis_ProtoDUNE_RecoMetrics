@@ -347,6 +347,7 @@ private:
     bool            m_setLogY;          ///< Is log Y axis
     bool            m_norm;             ///< Whether to normalise histograms when plotting
     bool            m_squarePlot;       ///< Draw square plot
+    bool            m_rangeSet;         ///< Is range set
     float           m_minX;             ///< Min X
     float           m_maxX;             ///< Max X
     float           m_minY;             ///< Min Y
@@ -422,10 +423,11 @@ inline void DrawClass::SquarePlot(bool squarePlot)
 
 inline void DrawClass::SetRange(const float minX, const float maxX, const float minY, const float maxY)
 {
-   m_minX = minX;
-   m_maxX = maxX;
-   m_minY = minY;
-   m_maxY = maxY;
+    m_rangeSet = true;
+    m_minX = minX;
+    m_maxX = maxX;
+    m_minY = minY;
+    m_maxY = maxY;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
