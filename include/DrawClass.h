@@ -127,8 +127,9 @@ public:
      *  @param  maxX
      *  @param  minY
      *  @param  maxY
+     *  @param  legInfo legend title
      */
-    void SetLegend(const float minX, const float maxX, const float minY, const float maxY);
+    void SetLegend(const float minX, const float maxX, const float minY, const float maxY, const std::string legInfo = "");
 
     /**
      *   @brief  Set left margin
@@ -352,6 +353,7 @@ private:
     float           m_maxX;             ///< Max X
     float           m_minY;             ///< Min Y
     float           m_maxY;             ///< Max Y
+    std::string     m_legInfo;          ///< Legend header
     float           m_legLowX;          ///< Low X Legend position
     float           m_legHighX;         ///< High X Legend position
     float           m_legLowY;          ///< Low Y Legend position
@@ -432,8 +434,9 @@ inline void DrawClass::SetRange(const float minX, const float maxX, const float 
 
 //------------------------------------------------------------------------------------------------------------------------------------------ 
 
-inline void DrawClass::SetLegend(const float minX, const float maxX, const float minY, const float maxY)
+inline void DrawClass::SetLegend(const float minX, const float maxX, const float minY, const float maxY, const std::string legInfo)
 {
+    m_legInfo = legInfo;
     m_legLowX = minX;
     m_legHighX = maxX;
     m_legLowY = minY;
