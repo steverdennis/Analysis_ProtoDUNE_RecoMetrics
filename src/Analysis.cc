@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
     Style();
 
     EventClassVector eventClassVector;
+    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/mcc11_Pndr/Beam_Cosmics/1GeV/SpaceCharge/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/mcc11_Pndr/Beam_Cosmics/2GeV/SpaceCharge/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/mcc11_Pndr/Beam_Cosmics/3GeV/SpaceCharge/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/mcc11_Pndr/Beam_Cosmics/4GeV/SpaceCharge/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/mcc11_Pndr/Beam_Cosmics/5GeV/SpaceCharge/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/mcc11_Pndr/Beam_Cosmics/6GeV/SpaceCharge/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/mcc11_Pndr/Beam_Cosmics/7GeV/SpaceCharge/RootFiles/*.root", "Simulation");
     eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/Data_Run_5387_Momentum_1GeV/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/Data_Run_5430_Momentum_2GeV/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/Data_Run_5777_Momentum_3GeV/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/Data_Run_5758_Momentum_6GeV/RootFiles/*.root:/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/March/ProtoDUNE_Data/AnalysisTag8/Data_Run_5145_Momentum_7GeV/RootFiles/*.root", "Data");
-    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2019/February/ProtoDUNE_Data/AnalysisTag7/mcc11_Pndr/Beam_Cosmics/1GeV/SpaceCharge/RootFiles/*.root:/r06/dune/sg568/LAr/Jobs/protoDUNE/2019/February/ProtoDUNE_Data/AnalysisTag7/mcc11_Pndr/Beam_Cosmics/2GeV/SpaceCharge/RootFiles/*.root:/r06/dune/sg568/LAr/Jobs/protoDUNE/2019/February/ProtoDUNE_Data/AnalysisTag7/mcc11_Pndr/Beam_Cosmics/3GeV/SpaceCharge/RootFiles/*.root:/r06/dune/sg568/LAr/Jobs/protoDUNE/2019/February/ProtoDUNE_Data/AnalysisTag7/mcc11_Pndr/Beam_Cosmics/4GeV/SpaceCharge/RootFiles/*.root:/r06/dune/sg568/LAr/Jobs/protoDUNE/2019/February/ProtoDUNE_Data/AnalysisTag7/mcc11_Pndr/Beam_Cosmics/5GeV/SpaceCharge/RootFiles/*.root:/r06/dune/sg568/LAr/Jobs/protoDUNE/2019/February/ProtoDUNE_Data/AnalysisTag7/mcc11_Pndr/Beam_Cosmics/6GeV/SpaceCharge/RootFiles/*.root:/r06/dune/sg568/LAr/Jobs/protoDUNE/2019/February/ProtoDUNE_Data/AnalysisTag7/mcc11_Pndr/Beam_Cosmics/7GeV/SpaceCharge/RootFiles/*.root", "Simulation");
 
 /*
  isTriggered     = 1
@@ -77,9 +77,9 @@ int main(int argc, char *argv[])
 */
 
     int isTriggered(std::numeric_limits<int>::max()), nBeamPfos(std::numeric_limits<int>::max());
-//    int ckov0Status(std::numeric_limits<int>::max()), ckov1Status(std::numeric_limits<int>::max());
+    int ckov0Status(std::numeric_limits<int>::max()), ckov1Status(std::numeric_limits<int>::max());
     float beamMomentum(std::numeric_limits<float>::max());
-//    float tof(std::numeric_limits<float>::max());
+    float tof(std::numeric_limits<float>::max());
 //    float beamPositionX(std::numeric_limits<float>::max()), beamPositionY(std::numeric_limits<float>::max()), beamPositionZ(std::numeric_limits<float>::max());
     float beamDirectionX(std::numeric_limits<float>::max()), beamDirectionY(std::numeric_limits<float>::max()), beamDirectionZ(std::numeric_limits<float>::max());
     std::vector<float> *recoDirectionX(nullptr), *recoDirectionY(nullptr), *recoDirectionZ(nullptr);
@@ -95,40 +95,60 @@ int main(int argc, char *argv[])
     const float nsPerTick(500);
     const int maxBin(8);
 
-//    typedef std::map<Particle, DrawClass> ParticleToDrawClassMap;
+    typedef std::map<Particle, DrawClass> ParticleToDrawClassMap;
 
     DrawClass drawClass_BeamParticleEff("Beam Particle Efficiency Vs Momentum");
     drawClass_BeamParticleEff.SetRange(0.f, static_cast<float>(maxBin), 0.f, 1.05f);
-    drawClass_BeamParticleEff.SetLegend(0.35, 0.65, 0.2, 0.5);
+    drawClass_BeamParticleEff.SetLegend(0.35, 0.65, 0.2, 0.4);
     drawClass_BeamParticleEff.SetNColumns(1);
+    drawClass_BeamParticleEff.SetBottomMargin(0.15);
+    drawClass_BeamParticleEff.SetTopMargin(0.15);
 
-/*
     std::vector<Particle> particles;
-    particles = {ELECTRON, PROTON, KAONPLUS, PIPLUS, OTHER};
-    ParticleToDrawClassMap drawClassMap_BeamParticleEff;
+    particles = {POSITRON, PROTON, KAONPLUS, PIPLUS, ANTIMUON, OTHER};
+    ParticleToDrawClassMap drawClassMap_BeamParticleEff, drawClassMap_OpeningAngle;
 
     for (const Particle &particle : particles)
     {
         std::string particleName(Helper::GetParticleName(particle));
         DrawClass drawClass("Beam Particle Efficiency Vs Momentum " + particleName);
         drawClass.SetRange(0.f, 8.f, 0.f, 1.05f);
+        drawClass.SetLegend(0.35, 0.65, 0.2, 0.4);
+        drawClass.SetNColumns(1);
+        drawClass.SetBottomMargin(0.15);
+        drawClass.SetTopMargin(0.15);
         drawClassMap_BeamParticleEff.insert(ParticleToDrawClassMap::value_type(particle, drawClass));
+
+        DrawClass drawClass_OpeningAngle1("Beam Particle Opening Angle" + particleName);
+        drawClass_OpeningAngle1.SetLegend(0.6, 0.8, 0.6, 0.8);
+        drawClass_OpeningAngle1.SetNColumns(1);
+        drawClass_OpeningAngle1.SetBottomMargin(0.15);
+        drawClass_OpeningAngle1.SetTopMargin(0.15);
+        drawClass_OpeningAngle1.SetTitleOffsetY(1.3);
+        drawClassMap_OpeningAngle.insert(ParticleToDrawClassMap::value_type(particle, drawClass_OpeningAngle1));
     }
-*/
 
     DrawClass drawClass_OpeningAngle("Beam Particle Opening Angle");
-    drawClass_OpeningAngle.SetLogY(true);
-    drawClass_OpeningAngle.SetLegend(0.3, 0.5, 0.3, 0.5);
+    drawClass_OpeningAngle.SetLegend(0.6, 0.8, 0.6, 0.8);
     drawClass_OpeningAngle.SetNColumns(1);
+    drawClass_OpeningAngle.SetBottomMargin(0.15);
+    drawClass_OpeningAngle.SetTopMargin(0.15);
+    drawClass_OpeningAngle.SetTitleOffsetY(1.3);
 
     DrawClass drawClass_NCosmicRayPfos("Number of Reconstructed Cosmic Rays");
-    drawClass_NCosmicRayPfos.SetRange(0.f, 200.f, 0.f, 0.f);
+    drawClass_NCosmicRayPfos.SetRange(0.f, 200.f, 0.f, 0.055f);
     drawClass_NCosmicRayPfos.SetNColumns(1);
+    drawClass_NCosmicRayPfos.SetBottomMargin(0.15);
+    drawClass_NCosmicRayPfos.SetTopMargin(0.15);
+    drawClass_NCosmicRayPfos.SetLegend(0.2, 0.4, 0.6, 0.775);
 
     DrawClass drawClass_StitchedT0("Stitched T0");
-    drawClass_StitchedT0.SetRange(-1000.f, 1000.f, 0.f, 0.f);
+    drawClass_StitchedT0.SetRange(-2750.f, 750.f, 0.f, 0.02f);
     drawClass_StitchedT0.SetLegend(0.35, 0.65, 0.3, 0.5);
     drawClass_StitchedT0.SetNColumns(1);
+    drawClass_StitchedT0.SetBottomMargin(0.15);
+    drawClass_StitchedT0.SetTopMargin(0.15);
+    drawClass_StitchedT0.SetTitleOffsetY(1.25);
 
     for (EventClass &eventClass : eventClassVector)
     {
@@ -146,55 +166,63 @@ int main(int argc, char *argv[])
         pTH1F_BeamMCPrimaryMomentum_Matched->GetXaxis()->SetTitle("Beam Momentum [GeV]");
         pTH1F_BeamMCPrimaryMomentum_Matched->SetLineColor(kBlue);
 
-/*
+        // Opening Angles
+        const int nBinsAngle(100);
+        const float lowBinAngle(0.f), highBinAngle(1.57f);
+        TH1F *pTH1F_BeamOpeningAngle = new TH1F("Opening_Angle", "", nBinsAngle, lowBinAngle, highBinAngle);
+        Helper::Format(pTH1F_BeamOpeningAngle);
+        pTH1F_BeamOpeningAngle->GetXaxis()->SetTitle("Opening Angle [rad]");
+        pTH1F_BeamOpeningAngle->GetYaxis()->SetTitle("Fraction of Events");
+
         typedef std::map<Particle, TH1F*> ParticleToHistMap;
         ParticleToHistMap particleToHistMap_BeamMCPrimaryMomentumTotal;
         ParticleToHistMap particleToHistMap_BeamMCPrimaryMomentumTotal_Matched;
+        ParticleToHistMap particleToHistMap_BeamOpeningAngle;
 
         for (const Particle &particle : particles)
         {
             std::string particleName(Helper::GetParticleName(particle));
 
             std::string histName("BeamMCPrimaryMomentumTotal_" + particleName);
-            TH1F *pTH1F_BeamMCPrimaryMomentumTotal_Particle = new TH1F(histName.c_str(), "", nBins, 0.f, maxBin);
+            TH1F *pTH1F_BeamMCPrimaryMomentumTotal_Particle = new TH1F(histName.c_str(), "", maxBin, 0.f, maxBin);
             Helper::Format(pTH1F_BeamMCPrimaryMomentumTotal_Particle);
             pTH1F_BeamMCPrimaryMomentumTotal_Particle->GetXaxis()->SetTitle("Number of Hits");
             pTH1F_BeamMCPrimaryMomentumTotal_Particle->SetLineColor(kRed);
             particleToHistMap_BeamMCPrimaryMomentumTotal.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamMCPrimaryMomentumTotal_Particle));
 
             std::string histNameMatched("BeamMCPrimaryMomentumTotal_Matched_" + particleName);
-            TH1F *pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle = new TH1F(histNameMatched.c_str(), "", nBins, 0.f, maxBin);
+            TH1F *pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle = new TH1F(histNameMatched.c_str(), "", maxBin, 0.f, maxBin);
             Helper::Format(pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle);
             pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle->GetXaxis()->SetTitle("Number of Hits");
             pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle->SetLineColor(kBlue);
             particleToHistMap_BeamMCPrimaryMomentumTotal_Matched.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle));
-        }
-*/
 
-        // Opening Angles
-        const int nBinsAngle(100);
-        const float lowBinAngle(0.f), highBinAngle(2.f);
-        TH1F *pTH1F_BeamOpeningAngle = new TH1F("Opening Angle", "", nBinsAngle, lowBinAngle, highBinAngle);
-        Helper::Format(pTH1F_BeamOpeningAngle);
-        pTH1F_BeamOpeningAngle->GetXaxis()->SetTitle("Opening Angle [rad]");
-        pTH1F_BeamOpeningAngle->GetYaxis()->SetTitle("Entries");
+            std::string histNameAngle("Opening_Angle_" + particleName);
+            TH1F *pTH1F_BeamOpeningAngle1 = new TH1F(histNameAngle.c_str(), "", nBinsAngle, lowBinAngle, highBinAngle);
+            Helper::Format(pTH1F_BeamOpeningAngle1);
+            pTH1F_BeamOpeningAngle1->GetXaxis()->SetTitle("Opening Angle [rad]");
+            pTH1F_BeamOpeningAngle1->GetYaxis()->SetTitle("Fraction of Events");
+            particleToHistMap_BeamOpeningAngle.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamOpeningAngle1));
+        }
 
         TH1F *pTH1F_NClearCosmicRayPfos = new TH1F("NCosmicRayPfos", "", 100, 0, 100);
         Helper::Format(pTH1F_NClearCosmicRayPfos);
         pTH1F_NClearCosmicRayPfos->GetXaxis()->SetTitle("Number of Reconstructed Cosmic-Ray Muons");
+        pTH1F_NClearCosmicRayPfos->GetYaxis()->SetTitle("Fraction of Events");
 
         TH1F *pTH1F_StitchedT0 = new TH1F("StitchedT0", "", 100, -2750, 750);
         Helper::Format(pTH1F_StitchedT0);
         pTH1F_StitchedT0->GetXaxis()->SetTitle("T_{0} [ns]");
+        pTH1F_StitchedT0->GetYaxis()->SetTitle("Fraction of Events");
 
         TChain *pTChain = eventClass.GetTChain();
 
         pTChain->SetBranchAddress("isTriggered", &isTriggered);
         pTChain->SetBranchAddress("nBeamPfos", &nBeamPfos);
         pTChain->SetBranchAddress("beamMomentum", &beamMomentum);
-//        pTChain->SetBranchAddress("tof", &tof);
-//        pTChain->SetBranchAddress("ckov0Status", &ckov0Status);
-//        pTChain->SetBranchAddress("ckov1Status", &ckov1Status);
+        pTChain->SetBranchAddress("tof", &tof);
+        pTChain->SetBranchAddress("ckov0Status", &ckov0Status);
+        pTChain->SetBranchAddress("ckov1Status", &ckov1Status);
 //        pTChain->SetBranchAddress("beamPositionX", &beamPositionX);
 //        pTChain->SetBranchAddress("beamPositionY", &beamPositionY);
 //        pTChain->SetBranchAddress("beamPositionZ", &beamPositionZ);
@@ -263,20 +291,27 @@ int main(int argc, char *argv[])
             if (isTriggered == 1)
             {
                 nDetailedTrig++;
-/*
+
                 Particle particle(Helper::GetParticle(ckov0Status, ckov1Status, beamMomentum, tof));
+
+                if (particle ==  OTHER && ckov1Status > 1e9 && tof > 1e9)
+                    particle = Helper::GetParticleType(static_cast<int>(ckov0Status));
+
+                if (std::find(particles.begin(), particles.end(), particle) == particles.end())
+                    continue;
+
                 TH1F *pTH1F_BeamMCPrimaryMomentumTotal_Particle = particleToHistMap_BeamMCPrimaryMomentumTotal.at(particle);
                 TH1F *pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle = particleToHistMap_BeamMCPrimaryMomentumTotal_Matched.at(particle);
-*/
+
                 pTH1F_BeamMCPrimaryMomentum->Fill(beamMomentum);
-//                pTH1F_BeamMCPrimaryMomentumTotal_Particle->Fill(beamMomentum);
+                pTH1F_BeamMCPrimaryMomentumTotal_Particle->Fill(beamMomentum);
 
                 if (nBeamPfos > 0)
                 {
                     pTH1F_BeamMCPrimaryMomentum_Matched->Fill(beamMomentum);
-//                    pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle->Fill(beamMomentum);
+                    pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle->Fill(beamMomentum);
 
-                    const float mag1(beamDirectionX*beamDirectionX + beamDirectionY*beamDirectionY + beamDirectionZ*beamDirectionZ);
+                    const float mag1(std::sqrt(beamDirectionX*beamDirectionX + beamDirectionY*beamDirectionY + beamDirectionZ*beamDirectionZ));
                     float cosTheta(0.f);
                     int maxNHits(0);
 
@@ -289,12 +324,13 @@ int main(int argc, char *argv[])
                             const float x(recoDirectionX->at(i));
                             const float y(recoDirectionY->at(i));
                             const float z(recoDirectionZ->at(i));
-                            const float mag2(x*x+y*y+z*z);
-                            cosTheta = (x*beamDirectionX + y*beamDirectionY + z*beamDirectionZ) / (mag1 *mag2);
+                            const float mag2(std::sqrt(x*x+y*y+z*z));
+                            cosTheta = std::fabs(x*beamDirectionX + y*beamDirectionY + z*beamDirectionZ) / (mag1 *mag2);
                         }
                     }
 
-                    pTH1F_BeamOpeningAngle->Fill(std::acos(std::fabs(cosTheta)));
+                    pTH1F_BeamOpeningAngle->Fill(std::acos(cosTheta));
+                    particleToHistMap_BeamOpeningAngle.at(particle)->Fill(std::acos(cosTheta));
                 }
             }
         }
@@ -320,20 +356,19 @@ int main(int argc, char *argv[])
 //        const int nEvtsTotal(pTH1F_BeamMCPrimaryMomentum->GetEntries());
         drawClass_BeamParticleEff.AddGraph(pTGraphErrors_BeamMomentumEfficiency, eventClass.GetDescription());
 
-/*
         for (const Particle &particle : particles)
         {
             std::string particleName(Helper::GetParticleName(particle));
             TGraphErrors *pTGraphErrors_BeamMomentumEfficiency_Particle  = Helper::MakeEfficiency(particleToHistMap_BeamMCPrimaryMomentumTotal.at(particle), particleToHistMap_BeamMCPrimaryMomentumTotal_Matched.at(particle), "BeamMomentumEfficiency" + particleName, 10);
             pTGraphErrors_BeamMomentumEfficiency_Particle->GetXaxis()->SetTitle("Momentum [GeV]");
-            pTGraphErrors_BeamMomentumEfficiency_Particle->GetYaxis()->SetTitle("Efficiency");
+            pTGraphErrors_BeamMomentumEfficiency_Particle->GetYaxis()->SetTitle("Reconstruction Efficiency");
             pTGraphErrors_BeamMomentumEfficiency_Particle->GetYaxis()->SetRangeUser(0,1);
             pTGraphErrors_BeamMomentumEfficiency_Particle->GetYaxis()->SetDecimals();
-            const int nEvts(particleToHistMap_BeamMCPrimaryMomentumTotal.at(particle)->GetEntries());
-            drawClassMap_BeamParticleEff.at(particle).AddGraph(pTGraphErrors_BeamMomentumEfficiency_Particle, eventClass.GetDescription() + ", NEvts " + Helper::ToString(nEvts));
+            drawClassMap_BeamParticleEff.at(particle).AddGraph(pTGraphErrors_BeamMomentumEfficiency_Particle, eventClass.GetDescription());
             delete pTGraphErrors_BeamMomentumEfficiency_Particle;
+
+            drawClassMap_OpeningAngle.at(particle).AddHisto(particleToHistMap_BeamOpeningAngle.at(particle), eventClass.GetDescription());
         }
-*/
 
         drawClass_OpeningAngle.AddHisto(pTH1F_BeamOpeningAngle, eventClass.GetDescription());
         drawClass_NCosmicRayPfos.AddHisto(pTH1F_NClearCosmicRayPfos, eventClass.GetDescription());
@@ -344,21 +379,24 @@ int main(int argc, char *argv[])
         delete pTH1F_BeamOpeningAngle;
         delete pTH1F_NClearCosmicRayPfos;
         delete pTH1F_StitchedT0;
-/*
+
         for (const auto &iter : particleToHistMap_BeamMCPrimaryMomentumTotal)
             delete iter.second;
         for (const auto &iter : particleToHistMap_BeamMCPrimaryMomentumTotal_Matched)
             delete iter.second;
-*/
+        for (const auto &iter : particleToHistMap_BeamOpeningAngle)
+            delete iter.second;
     }
 
     drawClass_BeamParticleEff.Draw();
+    drawClass_OpeningAngle.Draw();
 
-/*
     for (const auto &iter : drawClassMap_BeamParticleEff)
         iter.second.Draw();
-*/
-    drawClass_OpeningAngle.Draw();
+
+    for (const auto &iter : drawClassMap_OpeningAngle)
+        iter.second.Draw();
+
     drawClass_NCosmicRayPfos.Draw();
     drawClass_StitchedT0.Draw();
 
