@@ -172,6 +172,20 @@ public:
      */
     void AddXAxisLabels(IntToStringMap xAxisLabels);
 
+    /**
+     *  @brief  Set title offset x
+     *
+     *  @param  xOffset offset
+     */
+    void SetTitleOffsetX(const float xOffset);
+
+    /**
+     *  @brief  Set title offset y
+     *
+     *  @param  yOffset offset
+     */
+    void SetTitleOffsetY(const float yOffset);
+
 private:
     /**
      *  @brief  Graph and additional info class
@@ -323,29 +337,33 @@ private:
 
     typedef std::vector<Indexed2DHisto*> Histo2DVector;
 
-    HistoVector     m_histos;        ///< Vector of pointers to IndexedHisto
-    Histo2DVector   m_2Dhistos;      ///< Vector of pointers to Indexed2DHisto
-    GraphVector     m_graphs;        ///< Vector of pointers to IndexedGraph
-    std::string     m_verboseString; ///< Description of plot
-    IntToStringMap  m_xAxisLabels;   ///< X axis labels
-    float           m_momentum;      ///< Momentum
-    bool            m_setLogX;       ///< Is log X axis
-    bool            m_setLogY;       ///< Is log Y axis
-    bool            m_norm;          ///< Whether to normalise histograms when plotting
-    bool            m_squarePlot;    ///< Draw square plot
-    float           m_minX;          ///< Min X
-    float           m_maxX;          ///< Max X
-    float           m_minY;          ///< Min Y
-    float           m_maxY;          ///< Max Y
-    float           m_legLowX;       ///< Low X Legend position
-    float           m_legHighX;      ///< High X Legend position
-    float           m_legLowY;       ///< Low Y Legend position
-    float           m_legHighY;      ///< High Y Legend position
-    int             m_nColumns;      ///< NColumns in legend
-    float           m_leftMargin;    ///< Left margin
-    float           m_rightMargin;   ///< Right margin
-    float           m_topMargin;     ///< Top margin
-    float           m_bottomMargin;  ///< Bottom margin
+    HistoVector     m_histos;           ///< Vector of pointers to IndexedHisto
+    Histo2DVector   m_2Dhistos;         ///< Vector of pointers to Indexed2DHisto
+    GraphVector     m_graphs;           ///< Vector of pointers to IndexedGraph
+    std::string     m_verboseString;    ///< Description of plot
+    IntToStringMap  m_xAxisLabels;      ///< X axis labels
+    float           m_momentum;         ///< Momentum
+    bool            m_setLogX;          ///< Is log X axis
+    bool            m_setLogY;          ///< Is log Y axis
+    bool            m_norm;             ///< Whether to normalise histograms when plotting
+    bool            m_squarePlot;       ///< Draw square plot
+    float           m_minX;             ///< Min X
+    float           m_maxX;             ///< Max X
+    float           m_minY;             ///< Min Y
+    float           m_maxY;             ///< Max Y
+    float           m_legLowX;          ///< Low X Legend position
+    float           m_legHighX;         ///< High X Legend position
+    float           m_legLowY;          ///< Low Y Legend position
+    float           m_legHighY;         ///< High Y Legend position
+    int             m_nColumns;         ///< NColumns in legend
+    float           m_leftMargin;       ///< Left margin
+    float           m_rightMargin;      ///< Right margin
+    float           m_topMargin;        ///< Top margin
+    float           m_bottomMargin;     ///< Bottom margin
+    bool            m_titleOffsetXSet;  ///< Is title offset in x set
+    float           m_titleOffsetX;     ///< X title offset
+    bool            m_titleOffsetYSet;  ///< Is title offset in x set
+    float           m_titleOffsetY;     ///< X title offset
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -462,6 +480,23 @@ inline void DrawClass::AddXAxisLabels(IntToStringMap xAxisLabels)
     m_xAxisLabels = xAxisLabels;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void DrawClass::SetTitleOffsetX(const float xOffset)
+{
+    m_titleOffsetXSet = true;
+    m_titleOffsetX = xOffset;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------ 
+
+inline void DrawClass::SetTitleOffsetY(const float yOffset)
+{
+    m_titleOffsetYSet = true;
+    m_titleOffsetY = yOffset;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 inline TGraphErrors *DrawClass::IndexedGraph::GetGraph()
@@ -477,6 +512,7 @@ inline std::string DrawClass::IndexedGraph::GetDescription()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 inline TH1F *DrawClass::IndexedHisto::GetHisto()
 {
@@ -490,6 +526,7 @@ inline std::string DrawClass::IndexedHisto::GetDescription()
     return m_desciption;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 inline TH2F *DrawClass::Indexed2DHisto::Get2DHisto()
