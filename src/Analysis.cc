@@ -150,6 +150,9 @@ int main(int argc, char *argv[])
     drawClass_StitchedT0.SetTopMargin(0.15);
     drawClass_StitchedT0.SetTitleOffsetY(1.25);
 
+    std::default_random_engine generator;
+    std::normal_distribution<double> distribution(1.0,0.4);
+
     for (EventClass &eventClass : eventClassVector)
     {
         int nBeamParticles(0), nBeamParticleMatches(0);
@@ -173,6 +176,11 @@ int main(int argc, char *argv[])
         Helper::Format(pTH1F_BeamOpeningAngle);
         pTH1F_BeamOpeningAngle->GetXaxis()->SetTitle("Opening Angle [rad]");
         pTH1F_BeamOpeningAngle->GetYaxis()->SetTitle("Fraction of Events");
+
+        TH1F *pTH1F_BeamOpeningAngleBlur = new TH1F("Opening_Angle_Blur", "", nBinsAngle, lowBinAngle, highBinAngle);
+        Helper::Format(pTH1F_BeamOpeningAngleBlur);
+        pTH1F_BeamOpeningAngleBlur->GetXaxis()->SetTitle("Opening Angle [rad]");
+        pTH1F_BeamOpeningAngleBlur->GetYaxis()->SetTitle("Fraction of Events");
 
         typedef std::map<Particle, TH1F*> ParticleToHistMap;
         ParticleToHistMap particleToHistMap_BeamMCPrimaryMomentumTotal;
@@ -312,7 +320,13 @@ int main(int argc, char *argv[])
                     pTH1F_BeamMCPrimaryMomentumTotal_Matched_Particle->Fill(beamMomentum);
 
                     const float mag1(std::sqrt(beamDirectionX*beamDirectionX + beamDirectionY*beamDirectionY + beamDirectionZ*beamDirectionZ));
-                    float cosTheta(0.f);
+
+                    const float beamDirectionX2(beamDirectionX*distribution(generator));
+                    const float beamDirectionY2(beamDirectionY*distribution(generator));
+                    const float beamDirectionZ2(beamDirectionZ); //*distribution(generator));
+                    const float mag3(std::sqrt(beamDirectionX2*beamDirectionX2 + beamDirectionY2*beamDirectionY2 + beamDirectionZ2*beamDirectionZ2));
+
+                    float cosTheta(0.f), cosThetaBlur(0.f);
                     int maxNHits(0);
 
                     for (unsigned int i = 0; i < nHitsRecoTotal->size(); i++)
@@ -326,10 +340,12 @@ int main(int argc, char *argv[])
                             const float z(recoDirectionZ->at(i));
                             const float mag2(std::sqrt(x*x+y*y+z*z));
                             cosTheta = std::fabs(x*beamDirectionX + y*beamDirectionY + z*beamDirectionZ) / (mag1 *mag2);
+                            cosThetaBlur = std::fabs(x*beamDirectionX2 + y*beamDirectionY2 + z*beamDirectionZ2) / (mag3 *mag2);
                         }
                     }
 
                     pTH1F_BeamOpeningAngle->Fill(std::acos(cosTheta));
+                    pTH1F_BeamOpeningAngleBlur->Fill(std::acos(cosThetaBlur));
                     particleToHistMap_BeamOpeningAngle.at(particle)->Fill(std::acos(cosTheta));
                 }
             }
@@ -371,12 +387,14 @@ int main(int argc, char *argv[])
         }
 
         drawClass_OpeningAngle.AddHisto(pTH1F_BeamOpeningAngle, eventClass.GetDescription());
+        drawClass_OpeningAngle.AddHisto(pTH1F_BeamOpeningAngleBlur, eventClass.GetDescription() + " Blurred 40%");
         drawClass_NCosmicRayPfos.AddHisto(pTH1F_NClearCosmicRayPfos, eventClass.GetDescription());
         drawClass_StitchedT0.AddHisto(pTH1F_StitchedT0, eventClass.GetDescription());
 
         delete pTH1F_BeamMCPrimaryMomentum;
         delete pTH1F_BeamMCPrimaryMomentum_Matched;
         delete pTH1F_BeamOpeningAngle;
+        delete pTH1F_BeamOpeningAngleBlur;
         delete pTH1F_NClearCosmicRayPfos;
         delete pTH1F_StitchedT0;
 
