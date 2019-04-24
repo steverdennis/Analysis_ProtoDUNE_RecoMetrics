@@ -260,6 +260,10 @@ int main(int argc, char *argv[])
         pTChain->SetBranchAddress("crEndPointZ", &crEndPointZ);
 */
 
+const float roughBeamX(-0.18f);
+const float roughBeamY(-0.2f);
+const float roughBeamZ(0.963f);
+
         unsigned int nEntries(pTChain->GetEntries());
         for (unsigned int entry = 0; entry < nEntries; entry++)
         {
@@ -321,9 +325,9 @@ int main(int argc, char *argv[])
 
                     const float mag1(std::sqrt(beamDirectionX*beamDirectionX + beamDirectionY*beamDirectionY + beamDirectionZ*beamDirectionZ));
 
-                    const float beamDirectionX2(beamDirectionX*distribution(generator));
-                    const float beamDirectionY2(beamDirectionY*distribution(generator));
-                    const float beamDirectionZ2(beamDirectionZ); //*distribution(generator));
+                    const float beamDirectionX2(roughBeamX); //beamDirectionX*distribution(generator));
+                    const float beamDirectionY2(roughBeamY); //beamDirectionY*distribution(generator));
+                    const float beamDirectionZ2(roughBeamZ); //beamDirectionZ); //*distribution(generator));
                     const float mag3(std::sqrt(beamDirectionX2*beamDirectionX2 + beamDirectionY2*beamDirectionY2 + beamDirectionZ2*beamDirectionZ2));
 
                     float cosTheta(0.f), cosThetaBlur(0.f);
@@ -387,7 +391,7 @@ int main(int argc, char *argv[])
         }
 
         drawClass_OpeningAngle.AddHisto(pTH1F_BeamOpeningAngle, eventClass.GetDescription());
-        drawClass_OpeningAngle.AddHisto(pTH1F_BeamOpeningAngleBlur, eventClass.GetDescription() + " Blurred 40%");
+        drawClass_OpeningAngle.AddHisto(pTH1F_BeamOpeningAngleBlur, eventClass.GetDescription() + " Fixed Direction");
         drawClass_NCosmicRayPfos.AddHisto(pTH1F_NClearCosmicRayPfos, eventClass.GetDescription());
         drawClass_StitchedT0.AddHisto(pTH1F_StitchedT0, eventClass.GetDescription());
 
