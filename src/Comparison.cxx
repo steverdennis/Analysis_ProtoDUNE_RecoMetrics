@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     float targetVertexX2(std::numeric_limits<float>::max()), targetVertexY2(std::numeric_limits<float>::max()), targetVertexZ2(std::numeric_limits<float>::max());
     int mcNuanceCode(std::numeric_limits<int>::max());
     std::vector<int> *mcPrimaryPdg(nullptr);
+    std::vector<float> *mcPrimaryVtxX(nullptr), *mcPrimaryVtxY(nullptr), *mcPrimaryVtxZ(nullptr), *mcPrimaryEndX(nullptr), *mcPrimaryEndY(nullptr), *mcPrimaryEndZ(nullptr);
 
     TChain *pTChain = new TChain("Validation");
     pTChain->Add("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/May/ProtoDUNE_RecoMetrics_BDTVtx/AnalysisTag2/mcc11_Pndr/Beam_Cosmics/1GeV/SpaceCharge/RootFiles/ProtoDUNE_RecoMetrics_BDTVtx_Job_Number_*.root");
@@ -89,8 +90,15 @@ int main(int argc, char *argv[])
     pTChain2->SetBranchAddress("targetVertexY", &targetVertexY2);
     pTChain2->SetBranchAddress("targetVertexZ", &targetVertexZ2);
 
+    pTChain->SetBranchAddress("mcPrimaryVtxX", &mcPrimaryVtxX);
+    pTChain->SetBranchAddress("mcPrimaryVtxY", &mcPrimaryVtxY);
+    pTChain->SetBranchAddress("mcPrimaryVtxZ", &mcPrimaryVtxZ);
+    pTChain->SetBranchAddress("mcPrimaryEndX", &mcPrimaryEndX);
+    pTChain->SetBranchAddress("mcPrimaryEndY", &mcPrimaryEndY);
+    pTChain->SetBranchAddress("mcPrimaryEndZ", &mcPrimaryEndZ);
+
     const int vtxBins(100);
-    const float vtxMax(250);
+    const float vtxMax(50);
 
     DrawClass drawClass_VtxDR_Changed("Beam Particle Vertex Delta R Changed");
     drawClass_VtxDR_Changed.SetLogY(true);
@@ -134,28 +142,39 @@ int main(int argc, char *argv[])
 
         if (targetVertexZ < -50.f) continue;
 
+        const bool isShower(std::fabs(mcPrimaryPdg->at(0)) == 11 || mcPrimaryPdg->at(0) == 22);
+        const float vtxX(isShower ? mcPrimaryVtxX->at(0) : mcPrimaryEndX->at(0));
+        const float vtxY(isShower ? mcPrimaryVtxY->at(0) : mcPrimaryEndY->at(0));
+        const float vtxZ(isShower ? mcPrimaryVtxZ->at(0) : mcPrimaryEndZ->at(0));
+
         FloatVector position = {recoVertexX, recoVertexY, recoVertexZ};
         FloatVector position2 = {recoVertexX2, recoVertexY2, recoVertexZ2};
 
         FloatVector sccPosition = SpaceChargeHelper::GetSpaceChargeCorrectedPosition(position);
         FloatVector sccPosition2 = SpaceChargeHelper::GetSpaceChargeCorrectedPosition(position2);
 
-        const float deltaX(sccPosition.at(0) - targetVertexX);
-        const float deltaY(sccPosition.at(1) - targetVertexY);
-        const float deltaZ(sccPosition.at(2) - targetVertexZ);
+        const float deltaX(std::fabs(sccPosition.at(0) - vtxX));
+        const float deltaY(std::fabs(sccPosition.at(1) - vtxY));
+        const float deltaZ(std::fabs(sccPosition.at(2) - vtxZ));
         const float deltaR(std::sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ));
 
-        const float deltaX2(sccPosition2.at(0) - targetVertexX2);
-        const float deltaY2(sccPosition2.at(1) - targetVertexY2);
-        const float deltaZ2(sccPosition2.at(2) - targetVertexZ2);
+        const float deltaX2(std::fabs(sccPosition2.at(0) - vtxX));
+        const float deltaY2(std::fabs(sccPosition2.at(1) - vtxY));
+        const float deltaZ2(std::fabs(sccPosition2.at(2) - vtxZ));
         const float deltaR2(std::sqrt(deltaX2*deltaX2 + deltaY2*deltaY2 + deltaZ2*deltaZ2));
 
         const bool hasDeltaXChanged(std::fabs(recoVertexX - recoVertexX2) > 2);
         const bool hasDeltaYChanged(std::fabs(recoVertexY - recoVertexY2) > 2);
         const bool hasDeltaZChanged(std::fabs(recoVertexZ - recoVertexZ2) > 2);
 
+//std::cout << "vtxX, vtxY, vtxZ : " << targetVertexX << ", " << targetVertexY << ", " << targetVertexZ << std::endl;
+//std::cout << "vtxDeltaR : " << deltaR << std::endl;
+
         if (deltaR < 5 && deltaR2 > 10)
+        {
             std::cout << "Root File Name : " << pTChain->GetCurrentFile()->GetName() << ", " << pTChain2->GetCurrentFile()->GetName() << ", DeltaDeltaR : " << (deltaR2 - deltaR) << std::endl;
+            std::cout << "True vertex    : " << vtxX << " " << vtxY << " " << vtxZ << std::endl;
+        }
 
         if (hasDeltaXChanged || hasDeltaYChanged || hasDeltaZChanged)
         {

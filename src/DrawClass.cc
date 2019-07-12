@@ -182,7 +182,7 @@ void DrawClass::Draw() const
     pTCanvas->SetRightMargin(m_rightMargin);
     pTCanvas->SetBottomMargin(m_bottomMargin);
 
-    std::vector<int> colors = {1, 2, 4, 6, 7, 418, 800};
+    std::vector<int> colors = {2, 4, 1, 6, 7, 418, 800};
     const int nColors(colors.size());
     std::vector<int> linestyle = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     const int nStyles(linestyle.size());
