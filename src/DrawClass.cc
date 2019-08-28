@@ -38,7 +38,7 @@ DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_legHighX(0.825),
     m_legLowY(0.9),
     m_legHighY(0.975),
-    m_nColumns(2),
+    m_nColumns(1),
     m_leftMargin(0.15f),
     m_rightMargin(0.15f),
     m_topMargin(0.2f),
@@ -309,10 +309,10 @@ void DrawClass::Draw() const
     }
     else
     {
-//        pTCanvas->Divide(3,2);
-//        counter = 1;
+        pTCanvas->Divide(2,1);
+        counter = 1;
 
-        if (m_2Dhistos.size() > 6)
+        if (m_2Dhistos.size() > 2)
         {
             std::cout << "Need to readjust number of pads in canvas." << std::endl;
             return;
@@ -320,7 +320,7 @@ void DrawClass::Draw() const
 
         for (const auto &iter : m_2Dhistos)
         {
-//            pTCanvas->cd(counter);
+            pTCanvas->cd(counter);
             TH2F *pTH2F(iter->Get2DHisto());
 
             if (pTH2F->GetEntries() == 0)
@@ -353,12 +353,14 @@ void DrawClass::Draw() const
             }
 
             pTH2F->Draw("COLZ");
+            //pTH2F->Draw("TEXT");
 
             if (m_rangeSet)
             {
                 pTH2F->SetAxisRange(m_minX,m_maxX, "X");
                 pTH2F->SetAxisRange(m_minY,m_maxY, "Y");
                 pTH2F->Draw("COLZ");
+                //pTH2F->Draw("TEXT");
             }
 
             TPaveText *pTPaveText = new TPaveText(m_legLowX, m_legLowY, m_legHighX, m_legHighY, "NDC");
