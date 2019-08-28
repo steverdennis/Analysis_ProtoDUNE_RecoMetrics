@@ -41,6 +41,10 @@ int main(int argc, char *argv[])
     gROOT->SetBatch();
     Style();
 
+    // Particles to make plots for
+    std::vector<Particle> particles = {PROTON, PHOTON, PIPLUS, PIMINUS, KAONPLUS, KAONMINUS};
+
+    // Input files
     EventClassVector eventClassVector;
     std::string inputFiles("");
 
@@ -49,10 +53,16 @@ int main(int argc, char *argv[])
 
     eventClassVector.emplace_back(inputFiles, "Default");
 
-    int mcNuanceCode(0), isCorrectTBHierarchy(0), eventNumber(0);
+    // Tree variables
+    int mcNuanceCode(0), isCorrectTBHierarchy(0), nTargetTBHierarchyLosses(0), nTargetTBHierarchySplits(0), nTargetCRMatches(0), nTargetMatches(0), nTargetPrimaries(0), nTargetGoodTBHierarchyMatches(0), nTargetTBHierarchyMatches(0);
     std::vector<int> *mcPrimaryPdg(nullptr), *mcPrimaryTier(nullptr), *bestMatchPfoPdg(nullptr), *mcPrimaryNHitsTotal(nullptr), *bestMatchPfoNHitsTotal(nullptr), *bestMatchPfoNSharedHitsTotal(nullptr);
     std::vector<float> *mcPrimaryVtxZ(nullptr), *mcPrimaryEndZ(nullptr);
 
+    // Scale Setting
+    const int nBins(20), maxBin(20);
+    const int nBinHits(100), maxBinHits(5); // maxBinHits is logX (1e5)
+
+    // Cumulative Plots
     DrawClass drawClass_BeamParticleEff("Beam Particle Efficiency Vs nTrack and nShower Daughters");
     drawClass_BeamParticleEff.SetRange(0.f, 10.f, 0.f, 1.f);
 
@@ -62,43 +72,27 @@ int main(int argc, char *argv[])
     DrawClass drawClass("nTrknShw");
     drawClass.SetRange(0.f, 15.f, 0.f, 1.f);
 
-    DrawClass drawClass2("nTrknShw_Matched");
-    drawClass2.SetRange(0.f, 15.f, 0.f, 1.f);
+    DrawClass drawClass_Matched("nTrknShw_Matched");
+    drawClass_Matched.SetRange(0.f, 15.f, 0.f, 1.f);
 
-    std::vector<Particle> particles = {POSITRON, PROTON, ANTIMUON, KAONPLUS, PIPLUS, ELECTRON, ANTIPROTON, MUON, KAONMINUS, PIMINUS, PHOTON};
+    DrawClass drawClass_PrimaryEff("Primary Reco Efficiency Vs NHits");
+    drawClass_PrimaryEff.SetLogX(true);
+    drawClass_PrimaryEff.SetRange(0.f, maxBinHits, 0.f, 1.05f);
+    drawClass_PrimaryEff.SetLegend(0.1,0.9,0.825,0.975);
 
-    typedef std::map<Particle, DrawClass> ParticleToDrawClassMap;
-    ParticleToDrawClassMap drawClassMap_BeamParticleEff;
-    ParticleToDrawClassMap drawClassMap_BeamParticleComp;
-    ParticleToDrawClassMap drawClassMap_BeamParticlePur;
+    DrawClass drawClass_PrimaryComp("Primary Completeness");
+    drawClass_PrimaryComp.SetLogY(true);
+    drawClass_PrimaryComp.SetRange(0.f, 1.1f, 0.001f, 1.05f);
+    drawClass_PrimaryComp.SetLegend(0.1,0.9,0.825,0.975);
 
-    const int nBins(20), maxBin(20);
-    // Log Scale
-    const int nBinHits(100), maxBinHits(5);
-
-    for (const Particle &particle : particles)
-    {
-        std::string particleName(Helper::GetParticleName(particle));
-
-        DrawClass drawClass("Primary Reco Efficiency Vs NHits " + particleName);
-        drawClass.SetLogX(true);
-        drawClass.SetRange(0.f, maxBinHits, 0.f, 1.05f);
-        drawClassMap_BeamParticleEff.insert(ParticleToDrawClassMap::value_type(particle, drawClass));
-
-        DrawClass drawClass_BeamParticleComp_Particle("Beam Particle Completeness" + particleName);
-        drawClass_BeamParticleComp_Particle.SetLogY(true);
-        drawClass_BeamParticleComp_Particle.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
-        drawClassMap_BeamParticleComp.insert(ParticleToDrawClassMap::value_type(particle, drawClass_BeamParticleComp_Particle));
-
-        DrawClass drawClass_BeamParticlePurity_Particle("Beam Particle Purity" + particleName);
-        drawClass_BeamParticlePurity_Particle.SetLogY(true);
-        drawClass_BeamParticlePurity_Particle.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
-        drawClassMap_BeamParticlePur.insert(ParticleToDrawClassMap::value_type(particle, drawClass_BeamParticlePurity_Particle));
-    }
+    DrawClass drawClass_PrimaryPur("Primary Purity");
+    drawClass_PrimaryPur.SetLogY(true);
+    drawClass_PrimaryPur.SetRange(0.f, 1.1f, 0.001f, 1.05f);
+    drawClass_PrimaryPur.SetLegend(0.1,0.9,0.825,0.975);
 
     for (EventClass &eventClass : eventClassVector)
     {
-        // Beam Efficiency vs NHits
+        // Histograms for a given data set
         TH2F *pTH2F_MCTrkShw = new TH2F("MCTrkShw", "", nBins, 0, maxBin, nBins, 0, maxBin);
         Helper::Format(pTH2F_MCTrkShw);
         pTH2F_MCTrkShw->GetXaxis()->SetTitle("nTrk Daughters");
@@ -109,7 +103,6 @@ int main(int argc, char *argv[])
         pTH2F_MCTrkShw_Matched->GetXaxis()->SetTitle("nTrk Daughters");
         pTH2F_MCTrkShw_Matched->GetYaxis()->SetTitle("nShw Daughters");
 
-        // Beam Efficiency vs NHits
         TH1F *pTH1F_MCPrimaries = new TH1F("MCPrimaries", "", nBins, 0, maxBin);
         Helper::Format(pTH1F_MCPrimaries);
         pTH1F_MCPrimaries->GetXaxis()->SetTitle("nPrimaries");
@@ -128,12 +121,11 @@ int main(int argc, char *argv[])
         {
             const std::string particleName(Helper::GetParticleName(particle));
 
-            std::string histName("BeamMCPrimaryNHitsTotal_" + particleName);
+            const std::string histName("BeamMCPrimaryNHitsTotal_" + particleName);
             TH1F *pTH1F_BeamMCPrimaryNHitsTotal_Particle = new TH1F(histName.c_str(), "", nBinHits, 0, maxBinHits);
             Helper::Format(pTH1F_BeamMCPrimaryNHitsTotal_Particle);
             Helper::BinLogX(pTH1F_BeamMCPrimaryNHitsTotal_Particle);
             pTH1F_BeamMCPrimaryNHitsTotal_Particle->GetXaxis()->SetTitle("Number of Hits");
-            pTH1F_BeamMCPrimaryNHitsTotal_Particle->SetLineColor(kRed);
             particleToHistMap_BeamMCPrimaryNHitsTotal.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamMCPrimaryNHitsTotal_Particle));
 
             const std::string histNameMatched("BeamMCPrimaryNHitsTotal_Matched_" + particleName);
@@ -141,30 +133,33 @@ int main(int argc, char *argv[])
             Helper::Format(pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle);
             Helper::BinLogX(pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle);
             pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle->GetXaxis()->SetTitle("Number of Hits");
-            pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle->SetLineColor(kBlue);
             particleToHistMap_BeamMCPrimaryNHitsTotal_Matched.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamMCPrimaryNHitsTotal_Matched_Particle));
 
-            // Beam Completeness
-            histName = "BeamParticleCompleteness_" + particleName;
-            TH1F *pTH1F_BeamParticleCompleteness_Particle = new TH1F(histName.c_str(), "", nBins, 0, 1.f);
+            const std::string histNameComp("BeamParticleCompleteness_" + particleName);
+            TH1F *pTH1F_BeamParticleCompleteness_Particle = new TH1F(histNameComp.c_str(), "", nBins, 0, 1.f);
             Helper::Format(pTH1F_BeamParticleCompleteness_Particle);
             pTH1F_BeamParticleCompleteness_Particle->GetXaxis()->SetTitle("Completeness");
             pTH1F_BeamParticleCompleteness_Particle->GetYaxis()->SetTitle("Fraction of Events");
-            pTH1F_BeamParticleCompleteness_Particle->SetLineColor(kBlue);
             particleToHistMap_BeamParticleCompleteness.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamParticleCompleteness_Particle));
 
-            // Beam Purity
-            histName = "BeamParticlePurity_" + particleName;
-            TH1F *pTH1F_BeamParticlePurity_Particle = new TH1F(histName.c_str(), "", nBins, 0, 1.f);
+            const std::string histNamePur("BeamParticlePurity_" + particleName);
+            TH1F *pTH1F_BeamParticlePurity_Particle = new TH1F(histNamePur.c_str(), "", nBins, 0, 1.f);
             Helper::Format(pTH1F_BeamParticlePurity_Particle);
             pTH1F_BeamParticlePurity_Particle->GetXaxis()->SetTitle("Purity");
             pTH1F_BeamParticlePurity_Particle->GetYaxis()->SetTitle("Fraction of Events");
-            pTH1F_BeamParticlePurity_Particle->SetLineColor(kBlue);
             particleToHistMap_BeamParticlePurity.insert(ParticleToHistMap::value_type(particle, pTH1F_BeamParticlePurity_Particle));
         }
 
+        // Load Chain
         TChain *pTChain = eventClass.GetTChain();
-        pTChain->SetBranchAddress("eventNumber", &eventNumber);
+
+        pTChain->SetBranchAddress("nTargetTBHierarchyLosses", &nTargetTBHierarchyLosses);
+        pTChain->SetBranchAddress("nTargetTBHierarchySplits", &nTargetTBHierarchySplits);
+        pTChain->SetBranchAddress("nTargetCRMatches", &nTargetCRMatches);
+        pTChain->SetBranchAddress("nTargetMatches", &nTargetMatches);
+        pTChain->SetBranchAddress("nTargetPrimaries", &nTargetPrimaries);
+        pTChain->SetBranchAddress("nTargetGoodTBHierarchyMatches", &nTargetGoodTBHierarchyMatches);
+        pTChain->SetBranchAddress("nTargetTBHierarchyMatches", &nTargetTBHierarchyMatches);
         pTChain->SetBranchAddress("isCorrectTBHierarchy", &isCorrectTBHierarchy);
         pTChain->SetBranchAddress("mcNuanceCode", &mcNuanceCode);
 
@@ -175,17 +170,6 @@ int main(int argc, char *argv[])
         pTChain->SetBranchAddress("mcPrimaryEndZ", &mcPrimaryEndZ);
 
         pTChain->SetBranchAddress("bestMatchPfoPdg", &bestMatchPfoPdg);
-
-        int nTargetTBHierarchyLosses(0), nTargetTBHierarchySplits(0), nTargetCRMatches(0), nTargetMatches(0), nTargetPrimaries(0), nTargetGoodTBHierarchyMatches(0), nTargetTBHierarchyMatches(0);
-
-        pTChain->SetBranchAddress("nTargetTBHierarchyLosses", &nTargetTBHierarchyLosses);
-        pTChain->SetBranchAddress("nTargetTBHierarchySplits", &nTargetTBHierarchySplits);
-        pTChain->SetBranchAddress("nTargetCRMatches", &nTargetCRMatches);
-        pTChain->SetBranchAddress("nTargetMatches", &nTargetMatches);
-        pTChain->SetBranchAddress("nTargetPrimaries", &nTargetPrimaries);
-        pTChain->SetBranchAddress("nTargetGoodTBHierarchyMatches", &nTargetGoodTBHierarchyMatches);
-        pTChain->SetBranchAddress("nTargetTBHierarchyMatches", &nTargetTBHierarchyMatches);
-
         pTChain->SetBranchAddress("bestMatchPfoNHitsTotal", &bestMatchPfoNHitsTotal);
         pTChain->SetBranchAddress("bestMatchPfoNSharedHitsTotal", &bestMatchPfoNSharedHitsTotal);
 
@@ -194,9 +178,11 @@ int main(int argc, char *argv[])
         {
             pTChain->GetEntry(entry);
 
+            // Only consider test beam interactions
             if (mcNuanceCode != 2001)
                 continue;
 
+            // Find parent
             unsigned int parentCounter(std::numeric_limits<int>::max());
             for (unsigned int counter = 0; counter < mcPrimaryTier->size(); counter++)
             {
@@ -216,6 +202,7 @@ int main(int argc, char *argv[])
             const int mcParentPdg(mcPrimaryPdg->at(parentCounter));
             const int mcParentNHits(mcPrimaryNHitsTotal->at(parentCounter));
 
+            // Veto events if parent produces no hits, or if primary interaction is outside the vertex
             if (mcParentNHits < 1)
                 continue;
 
@@ -230,18 +217,17 @@ int main(int argc, char *argv[])
                     continue;
             }
 
+            // Loop over the primaries
             int nTrk(0), nShw(0);
-            bool skip(false);
-            bool newDefinition(true);
+            bool skip(false), allPrimariesReconstructed(true);
 
             for (unsigned int counter = 0; counter < mcPrimaryPdg->size(); counter++)
             {
                 if (bestMatchPfoPdg->at(counter) == 0)
-                    newDefinition = false;
+                    allPrimariesReconstructed = false;
 
                 const int pdg(mcPrimaryPdg->at(counter));
                 const int nMCHits(mcPrimaryNHitsTotal->at(counter));
-
                 Particle particle(Helper::GetParticleType(mcPrimaryPdg->at(counter))); // Should check first, but shouldn't break
 
                 if (particleToHistMap_BeamMCPrimaryNHitsTotal.find(particle) != particleToHistMap_BeamMCPrimaryNHitsTotal.end())
@@ -262,9 +248,16 @@ int main(int argc, char *argv[])
 
                 }
 
+                // If parent, skip plotting if only produces tiny number of hits (100)
                 if (counter == parentCounter)
-                    continue;
+                {
+                    if (mcPrimaryNHitsTotal->at(counter) < 100)
+                        skip = true;
 
+                    continue;
+                }
+
+                // Count daughter particle types
                 if (std::fabs(pdg) == 11 || pdg == 22)
                 {
                     nShw++;
@@ -273,9 +266,6 @@ int main(int argc, char *argv[])
                 {
                     nTrk++;
                 }
-
-                if (mcPrimaryNHitsTotal->at(counter) < 100)
-                    skip = true;
             }
 
             if (skip) continue;
@@ -283,8 +273,7 @@ int main(int argc, char *argv[])
             pTH1F_MCPrimaries->Fill(nTrk + nShw);
             pTH2F_MCTrkShw->Fill(nTrk, nShw);
 
-//            if (newDefinition && (nTargetGoodTBHierarchyMatches == nTargetTBHierarchyMatches) && (nTargetGoodTBHierarchyMatches >= nTargetPrimaries) && (nTargetCRMatches == 0) && (nTargetTBHierarchySplits == 0) && (nTargetTBHierarchyLosses == 0)) //isCorrectTBHierarchy)
-            if (isCorrectTBHierarchy)
+            if (allPrimariesReconstructed && (nTargetGoodTBHierarchyMatches == nTargetTBHierarchyMatches) && (nTargetGoodTBHierarchyMatches >= nTargetPrimaries) && (nTargetCRMatches == 0) && (nTargetTBHierarchySplits == 0) && (nTargetTBHierarchyLosses == 0)) // Previously: if (isCorrectTBHierarchy)
             {
                 pTH1F_MCPrimaries_Matched->Fill(nTrk + nShw);
                 pTH2F_MCTrkShw_Matched->Fill(nTrk, nShw);
@@ -307,20 +296,21 @@ int main(int argc, char *argv[])
         for (const Particle &particle : particles)
         {
             const std::string particleName(Helper::GetParticleName(particle));
-            TGraphErrors *pTGraphErrors_BeamNHitsEfficiency_Particle  = Helper::MakeEfficiency(particleToHistMap_BeamMCPrimaryNHitsTotal.at(particle), particleToHistMap_BeamMCPrimaryNHitsTotal_Matched.at(particle), "BeamNHitsEfficiency" + particleName);
+            TGraphErrors *pTGraphErrors_BeamNHitsEfficiency_Particle  = Helper::MakeEfficiency(particleToHistMap_BeamMCPrimaryNHitsTotal.at(particle), particleToHistMap_BeamMCPrimaryNHitsTotal_Matched.at(particle), "BeamNHitsEfficiency" + particleName, 10);
             pTGraphErrors_BeamNHitsEfficiency_Particle->GetXaxis()->SetTitle("Number of Hits");
             pTGraphErrors_BeamNHitsEfficiency_Particle->GetYaxis()->SetTitle("Efficiency");
             pTGraphErrors_BeamNHitsEfficiency_Particle->GetYaxis()->SetRangeUser(0,1);
             pTGraphErrors_BeamNHitsEfficiency_Particle->GetYaxis()->SetDecimals();
-            drawClassMap_BeamParticleEff.at(particle).AddGraph(pTGraphErrors_BeamNHitsEfficiency_Particle, eventClass.GetDescription());
-            delete pTGraphErrors_BeamNHitsEfficiency_Particle;
 
-            drawClassMap_BeamParticleComp.at(particle).AddHisto(particleToHistMap_BeamParticleCompleteness.at(particle), eventClass.GetDescription());
-            drawClassMap_BeamParticlePur.at(particle).AddHisto(particleToHistMap_BeamParticlePurity.at(particle), eventClass.GetDescription());
+            drawClass_PrimaryEff.AddGraph(pTGraphErrors_BeamNHitsEfficiency_Particle, eventClass.GetDescription() + " " + Helper::GetParticleString(particle));
+            drawClass_PrimaryComp.AddHisto(particleToHistMap_BeamParticleCompleteness.at(particle), eventClass.GetDescription() + " " + Helper::GetParticleString(particle));
+            drawClass_PrimaryPur.AddHisto(particleToHistMap_BeamParticlePurity.at(particle), eventClass.GetDescription() + " " + Helper::GetParticleString(particle));
+
+            delete pTGraphErrors_BeamNHitsEfficiency_Particle;
         }
 
         drawClass.AddHisto(pTH1F_MCPrimaries, eventClass.GetDescription());
-        drawClass2.AddHisto(pTH1F_MCPrimaries_Matched, eventClass.GetDescription());
+        drawClass_Matched.AddHisto(pTH1F_MCPrimaries_Matched, eventClass.GetDescription());
 
         delete pTH1F_MCPrimaries;
         delete pTH1F_MCPrimaries_Matched;
@@ -340,14 +330,11 @@ int main(int argc, char *argv[])
     drawClass_BeamParticleEff.Draw();
     drawClass_BeamParticleEff2D.Draw();
     drawClass.Draw();
-    drawClass2.Draw();
+    drawClass_Matched.Draw();
 
-    for (const auto &iter : drawClassMap_BeamParticleEff)
-        iter.second.Draw();
-    for (const auto &iter : drawClassMap_BeamParticleComp)
-        iter.second.Draw();
-    for (const auto &iter : drawClassMap_BeamParticlePur)
-        iter.second.Draw();
+    drawClass_PrimaryEff.Draw();
+    drawClass_PrimaryComp.Draw();
+    drawClass_PrimaryPur.Draw();
 
     return 0;
 }

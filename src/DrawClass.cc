@@ -38,7 +38,7 @@ DrawClass::DrawClass(const std::string &verboseString, const float momentum) :
     m_legHighX(0.825),
     m_legLowY(0.9),
     m_legHighY(0.975),
-    m_nColumns(1),
+    m_nColumns(2),
     m_leftMargin(0.15f),
     m_rightMargin(0.15f),
     m_topMargin(0.2f),
