@@ -48,34 +48,23 @@ int main(int argc, char *argv[])
     Style();
 
     EventClassVector eventClassVector;
+    std::string inputFiles("");
 
-    const int momentum(atoi(argv[1]));
-    std::string stringMomenta(Helper::ToString(momentum));
+    for (int momentum = 1; momentum <= 7; momentum++)
+        inputFiles += "/r07/dune/sg568/LAr/Jobs/protoDUNE/2019/September/ProtoDUNE_HierarchyMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/" + Helper::ToString(momentum) + "GeV/SpaceCharge/RootFiles/*.root:";
 
-    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc10_Pndr/Beam_Cosmics/" + stringMomenta + "GeV/SpaceChargeEffectOn/RootFiles/*.root", "mcc10, Space Charge", momentum);
-    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/" + stringMomenta + "GeV/SpaceCharge/RootFiles/*.root", "mcc11, Space Charge", momentum);
-    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/" + stringMomenta + "GeV/NoSpaceCharge/RootFiles/*.root", "mcc11, No Space Charge", momentum);
-    eventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/" + stringMomenta + "GeV/FluidFlow/RootFiles/*.root", "mcc11, Fluid Flow", momentum);
+    eventClassVector.emplace_back(inputFiles, "Default");
 
-    std::vector<Particle> particles;
-
-    if (momentum > 0)
-    {
-        particles = {POSITRON, PROTON, ANTIMUON, KAONPLUS, PIPLUS};
-    }
-    else
-    {
-        particles = {ELECTRON, ANTIPROTON, MUON, KAONMINUS, PIMINUS};
-    }
+    std::vector<Particle> particles = {POSITRON, PROTON, ANTIMUON, KAONPLUS, PIPLUS};
 
     int mcNuanceCode(0), isBeamParticle(0), isCosmicRay(0), nNuMatches(0), nCRMatches(0), eventNumber(0);
     std::vector<int> *mcPrimaryPdg(nullptr), *mcPrimaryNHitsTotal(nullptr), *bestMatchPfoPdg(nullptr), *bestMatchPfoNHitsTotal(nullptr),*bestMatchPfoNSharedHitsTotal(nullptr);
 
-    DrawClass drawClass_BeamParticleEff("Beam Particle Efficiency Vs NHits", momentum);
+    DrawClass drawClass_BeamParticleEff("Beam Particle Efficiency Vs NHits");
     drawClass_BeamParticleEff.SetLogX(true);
     drawClass_BeamParticleEff.SetRange(0.f, 0.f, 0.f, 1.05f);
 
-    DrawClass drawClass_CosmicRayEff("Cosmic Ray Efficiency Vs NHits", momentum);
+    DrawClass drawClass_CosmicRayEff("Cosmic Ray Efficiency Vs NHits");
     drawClass_CosmicRayEff.SetLogX(true);
     drawClass_CosmicRayEff.SetRange(0.f, 0.f, 0.f, 1.05f);
 
@@ -88,60 +77,60 @@ int main(int argc, char *argv[])
     {
         std::string particleName(Helper::GetParticleName(particle));
 
-        DrawClass drawClass("Beam Particle Efficiency Vs NHits " + particleName, momentum);
+        DrawClass drawClass("Beam Particle Efficiency Vs NHits " + particleName);
         drawClass.SetLogX(true);
         drawClass.SetRange(0.f, 0.f, 0.f, 1.05f);
         drawClassMap_BeamParticleEff.insert(ParticleToDrawClassMap::value_type(particle, drawClass));
 
-        DrawClass drawClass_BeamParticleComp_Particle("Beam Particle Completeness" + particleName, momentum);
+        DrawClass drawClass_BeamParticleComp_Particle("Beam Particle Completeness" + particleName);
         drawClass_BeamParticleComp_Particle.SetLogY(true);
         drawClass_BeamParticleComp_Particle.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
         drawClassMap_BeamParticleComp.insert(ParticleToDrawClassMap::value_type(particle, drawClass_BeamParticleComp_Particle));
 
-        DrawClass drawClass_BeamParticlePurity_Particle("Beam Particle Purity" + particleName, momentum);
+        DrawClass drawClass_BeamParticlePurity_Particle("Beam Particle Purity" + particleName);
         drawClass_BeamParticlePurity_Particle.SetLogY(true);
         drawClass_BeamParticlePurity_Particle.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
         drawClassMap_BeamParticlePur.insert(ParticleToDrawClassMap::value_type(particle, drawClass_BeamParticlePurity_Particle));
     }
 
-    DrawClass drawClass_BeamParticleNuMatches("Nu Matches Beam Particle", momentum);
+    DrawClass drawClass_BeamParticleNuMatches("Nu Matches Beam Particle");
     drawClass_BeamParticleNuMatches.SetRange(0.f, 5.f, 0.1f, 10000.f);
     drawClass_BeamParticleNuMatches.SetLogY(true);
     drawClass_BeamParticleNuMatches.Normalise(false);
 
-    DrawClass drawClass_BeamParticleNuMatchesEvent("Nu Matches Beam Particle Event", momentum);
+    DrawClass drawClass_BeamParticleNuMatchesEvent("Nu Matches Beam Particle Event");
     drawClass_BeamParticleNuMatchesEvent.SetRange(0.f, 5.f, 0.f, 5.f);
 
-    DrawClass drawClass_CosmicRayCRMatches("CR Matches Cosmic Ray", momentum);
+    DrawClass drawClass_CosmicRayCRMatches("CR Matches Cosmic Ray");
     drawClass_CosmicRayCRMatches.SetRange(0.f, 5.f, 0.1f, 1e6);
     drawClass_CosmicRayCRMatches.SetLogY(true);
     drawClass_CosmicRayCRMatches.Normalise(false);
 
-    DrawClass drawClass_CosmicRayCRMatchesEvent("CR Matches Cosmic Ray Event", momentum);
+    DrawClass drawClass_CosmicRayCRMatchesEvent("CR Matches Cosmic Ray Event");
     drawClass_CosmicRayCRMatchesEvent.SetRange(0.f, 125.f, 0.f, 125.f);
     drawClass_CosmicRayCRMatchesEvent.SquarePlot(true);
 
-    DrawClass drawClass_BeamParticleComp("Beam Particle Completeness", momentum);
+    DrawClass drawClass_BeamParticleComp("Beam Particle Completeness");
     drawClass_BeamParticleComp.SetLogY(true);
     drawClass_BeamParticleComp.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
-    DrawClass drawClass_BeamParticlePurity("Beam Particle Purity", momentum);
+    DrawClass drawClass_BeamParticlePurity("Beam Particle Purity");
     drawClass_BeamParticlePurity.SetLogY(true);
     drawClass_BeamParticlePurity.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
-    DrawClass drawClass_CosmicRayComp("Cosmic Ray Completeness", momentum);
+    DrawClass drawClass_CosmicRayComp("Cosmic Ray Completeness");
     drawClass_CosmicRayComp.SetLogY(true);
     drawClass_CosmicRayComp.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
-    DrawClass drawClass_CosmicRayPurity("Cosmic Ray Purity", momentum);
+    DrawClass drawClass_CosmicRayPurity("Cosmic Ray Purity");
     drawClass_CosmicRayPurity.SetLogY(true);
     drawClass_CosmicRayPurity.SetRange(0.f, 1.1f, 0.0001f, 1.05f);
 
-    DrawClass drawClass_BeamParticleCompPurity("Beam Particle Completeness Purity", momentum);
+    DrawClass drawClass_BeamParticleCompPurity("Beam Particle Completeness Purity");
     drawClass_BeamParticleCompPurity.SetRange(0.f, 1.f, 0.f, 1.f);
     drawClass_BeamParticleCompPurity.SquarePlot(true);
 
-    DrawClass drawClass_CosmicRayCompPurity("Cosmic Ray Completeness Purity", momentum);
+    DrawClass drawClass_CosmicRayCompPurity("Cosmic Ray Completeness Purity");
     drawClass_CosmicRayCompPurity.SetRange(0.f, 1.f, 0.f, 1.f);
     drawClass_CosmicRayCompPurity.SquarePlot(true);
 
