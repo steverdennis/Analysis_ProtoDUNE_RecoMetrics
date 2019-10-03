@@ -32,11 +32,11 @@ FILE(GLOB_RECURSE SRCS *.cc)
 
 SET( CMAKE_CXX_FLAGS "-g -Wall -std=c++17" )
 
-ADD_EXECUTABLE(Analysis ${SRCS})
+ADD_EXECUTABLE(Analysis ./src/Analysis.cxx ${SRCS})
 
-#ADD_EXECUTABLE(SliceAnalysis ./src/SliceAnalysis.cc ./src/Style.cc ./src/Objects.cc)
+ADD_EXECUTABLE(Differences ./src/Differences.cxx ${SRCS})
 
-INSTALL( TARGETS Analysis DESTINATION ${CMAKE_SOURCE_DIR}/bin PERMISSIONS
+INSTALL( TARGETS Analysis Differences DESTINATION ${CMAKE_SOURCE_DIR}/bin PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_EXECUTE
     WORLD_READ WORLD_EXECUTE )

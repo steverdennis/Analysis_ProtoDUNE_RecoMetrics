@@ -20,6 +20,15 @@ namespace analysis
 
 enum Particle {ELECTRON, POSITRON, PHOTON, MUON, ANTIMUON, PROTON, ANTIPROTON, NEUTRON, ANTINEUTRON, NEUTRINO, PIPLUS, PIMINUS, PIZERO, KAON0L, KAON0S, KAONPLUS, KAONMINUS, OTHER};
 
+typedef std::vector<std::string> StringVector;
+typedef std::vector<int> IntVector;
+typedef std::vector<float> FloatVector;
+typedef std::map<std::string, int> StringIntMap;
+typedef std::map<std::string, float> StringFloatMap;
+typedef std::map<std::string, IntVector*> StringIntVectorMap;
+typedef std::map<std::string, FloatVector*> StringFloatVectorMap;
+typedef std::map<std::string, std::string> StringMap;
+
 class Helper
 {
 public:
@@ -148,8 +157,45 @@ public:
      */
     template<typename T>
     static std::string ToStringPrecision(const T a_value, const int n = 6);
+
+    /**
+     *  @brief  Function indicating whether two root files are identical
+     *
+     *  @param  fileNameA first root file name
+     *  @param  fileNameB second root file name
+     *  @param  treeName tree name to compare
+     *  @param  intStrings list of int variables in root tree
+     *  @param  floatStrings list of float variables in root tree
+     *  @param  intVectorStrings list of std::vector<int> variables in root tree
+     *  @param  floatVectorStrings list of std::vector<float> variables in root tree
+     *  @param  nameSwitch optional map of stringA to stringB where stringA/stringB is the variable name in filenameA/filenameB, only used if variable names differ
+     *
+     *  @return bool are files identical
+     */
+    static bool CompareFiles(const std::string &fileNameA, const std::string &fileNameB, const std::string &treeName,
+        const StringVector &intStrings, const StringVector &floatStrings, const StringVector &intVectorStrings,
+        const StringVector &floatVectorStrings, const StringMap &nameSwitch = StringMap());
+
+    /**
+     *  @brief  Function to check whether file exists
+     *
+     *  @param  fileName input file name
+     *
+     *  @return bool does file exist
+     */
+    static bool DoesFileExist(const std::string &fileName);
+
+    /**
+     *  @brief  Function to check whether two std::vector<floats> are identical
+     *
+     *  @param  floatVectorA first input vector
+     *  @param  floatVectorB second input vector
+     *
+     *  @return bool are vectors identical
+     */
+    static bool AreFloatVectorsIdentical(const FloatVector &floatVectorA, const FloatVector &floatVectorB);
 };
 
-} // namespave analysis
+} // namespace analysis
 
 #endif // #ifndef HELPER_H

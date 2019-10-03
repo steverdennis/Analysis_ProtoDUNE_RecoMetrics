@@ -8,10 +8,12 @@
 
 #include "Helper.h"
 
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
+#include "TChain.h"
 #include "TGraphErrors.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -22,13 +24,13 @@ Helper::Helper()
 {
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 Helper::~Helper()
 {
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 float Helper::CalculateCosTheta2D(const float x1, const float y1, const float x2, const float y2)
 {
@@ -37,7 +39,7 @@ float Helper::CalculateCosTheta2D(const float x1, const float y1, const float x2
     return (x1*x2 + y1*y2) / (mag1 * mag2);
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 float Helper::GetFullWidthAtHalfMaximum(TH1F *pTH1F)
 {
@@ -75,7 +77,7 @@ float Helper::GetFullWidthAtHalfMaximum(TH1F *pTH1F)
     return (highHalfMaximum - lowHalfMaximum);
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 Particle Helper::GetParticleType(int pdg)
 {
@@ -107,7 +109,7 @@ Particle Helper::GetParticleType(int pdg)
     }
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 const char *Helper::GetParticleString(Particle part)
 {
@@ -135,7 +137,7 @@ const char *Helper::GetParticleString(Particle part)
     }
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 const char *Helper::GetParticleName(Particle part)
 {
@@ -163,7 +165,7 @@ const char *Helper::GetParticleName(Particle part)
     }
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 int Helper::ParticleToLineColor(Particle part)
 {
@@ -191,7 +193,7 @@ int Helper::ParticleToLineColor(Particle part)
     }
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 void Helper::Save(TCanvas *pTCanvas, std::string name, int momenta)
 {
@@ -210,7 +212,7 @@ void Helper::Save(TCanvas *pTCanvas, std::string name, int momenta)
     pTCanvas->SaveAs(dotCName.c_str());
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 template<typename T>
 void Helper::Format(T *&pT)
@@ -223,7 +225,7 @@ void Helper::Format(T *&pT)
     pT->GetYaxis()->SetTitleSize(0.05);
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 void Helper::BinLogX(TH1F *pTH1F)
 {
@@ -244,7 +246,7 @@ void Helper::BinLogX(TH1F *pTH1F)
     delete new_bins;
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 TGraphErrors *Helper::MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, const std::string &label, const int cut)
 {
@@ -280,7 +282,7 @@ TGraphErrors *Helper::MakeEfficiency(TH1F *pTH1F_Total, TH1F *pTH1F_Matched, con
     return pTGraphErrors_Efficiency;
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 TH2F *Helper::MakeEfficiency2D(TH2F *pTH2F_Total, TH2F *pTH2F_Matched, std::string label, const int cut)
 {
@@ -310,7 +312,7 @@ TH2F *Helper::MakeEfficiency2D(TH2F *pTH2F_Total, TH2F *pTH2F_Matched, std::stri
     return pTH2F;
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const float momentum, const float tof)
 {
@@ -368,7 +370,7 @@ Particle Helper::GetParticle(const int ckov0Status, const int ckov1Status, const
     return OTHER;
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 template<typename T>
 std::string Helper::ToString(T t)
@@ -378,7 +380,7 @@ std::string Helper::ToString(T t)
     return ss.str();
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
 std::string Helper::ToStringPrecision(const T a_value, const int n)
@@ -389,7 +391,170 @@ std::string Helper::ToStringPrecision(const T a_value, const int n)
     return out.str();
 }
 
-//==================================================
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+bool Helper::CompareFiles(const std::string &fileNameA, const std::string &fileNameB, const std::string &treeName,
+    const StringVector &intStrings, const StringVector &floatStrings, const StringVector &intVectorStrings,
+    const StringVector &floatVectorStrings, const StringMap &nameSwitch)
+{
+    TChain *pTChainA = new TChain(treeName.c_str());
+    pTChainA->Add(fileNameA.c_str());
+
+    TChain *pTChainB = new TChain(treeName.c_str());
+    pTChainB->Add(fileNameB.c_str());
+
+    const int nEntriesA(pTChainA->GetEntries()), nEntriesB(pTChainB->GetEntries());
+
+    if (nEntriesA != nEntriesB)
+    {
+        std::cout << "TChains have different sizes.  Exiting." << std::endl;
+        return false;
+    }
+
+    StringIntMap intFeatureMapA, intFeatureMapB;
+    StringFloatMap floatFeatureMapA, floatFeatureMapB;
+    StringIntVectorMap intVectorFeatureMapA, intVectorFeatureMapB;
+    StringFloatVectorMap floatVectorFeatureMapA, floatVectorFeatureMapB;
+
+    for (const std::string feature : intStrings)
+    {
+        intFeatureMapA.insert(StringIntMap::value_type(feature, std::numeric_limits<int>::max()));
+        intFeatureMapB.insert(StringIntMap::value_type(feature, std::numeric_limits<int>::max()));
+
+        pTChainA->SetBranchAddress(feature.c_str(), &intFeatureMapA.at(feature));
+
+        const std::string featureNameB(nameSwitch.find(feature) != nameSwitch.end() ? nameSwitch.at(feature) : feature);
+        pTChainB->SetBranchAddress(featureNameB.c_str(), &intFeatureMapB.at(feature));
+    }
+
+    for (const std::string feature : floatStrings)
+    {
+        floatFeatureMapA.insert(StringFloatMap::value_type(feature, std::numeric_limits<float>::max()));
+        floatFeatureMapB.insert(StringFloatMap::value_type(feature, std::numeric_limits<float>::max()));
+
+        pTChainA->SetBranchAddress(feature.c_str(), &floatFeatureMapA.at(feature));
+        pTChainB->SetBranchAddress(feature.c_str(), &floatFeatureMapB.at(feature));
+    }
+
+    for (const std::string feature : intVectorStrings)
+    {
+        intVectorFeatureMapA.insert(StringIntVectorMap::value_type(feature, new IntVector()));
+        intVectorFeatureMapB.insert(StringIntVectorMap::value_type(feature, new IntVector()));
+
+        pTChainA->SetBranchAddress(feature.c_str(), &intVectorFeatureMapA.at(feature));
+        pTChainB->SetBranchAddress(feature.c_str(), &intVectorFeatureMapB.at(feature));
+    }
+
+    for (const std::string feature : floatVectorStrings)
+    {
+        floatVectorFeatureMapA.insert(StringFloatVectorMap::value_type(feature, new FloatVector()));
+        floatVectorFeatureMapB.insert(StringFloatVectorMap::value_type(feature, new FloatVector()));
+
+        pTChainA->SetBranchAddress(feature.c_str(), &floatVectorFeatureMapA.at(feature));
+        pTChainB->SetBranchAddress(feature.c_str(), &floatVectorFeatureMapB.at(feature));
+    }
+
+    for (int entry = 0; entry < nEntriesA; entry++)
+    {
+        pTChainA->GetEntry(entry);
+        pTChainB->GetEntry(entry);
+
+        for (const auto iter : intFeatureMapA)
+        {
+            if (iter.second != intFeatureMapB.at(iter.first))
+            {
+                std::cout << "In Entry " << entry << ", the int feature " << iter.first << " differs between the files (A, B) : (" <<
+                    iter.second << ", " << intFeatureMapB.at(iter.first) << ")" << std::endl;
+                return false;
+            }
+        }
+
+        for (const auto iter : floatFeatureMapA)
+        {
+            if (iter.second != floatFeatureMapB.at(iter.first))
+            {
+                std::cout << "In Entry " << entry << ", the float feature " << iter.first << " differs between the files (A, B) : (" <<
+                    iter.second << ", " << floatFeatureMapB.at(iter.first) << ")" << std::endl;
+                return false;
+            }
+        }
+
+        for (const auto iter : intVectorFeatureMapA)
+        {
+            if (*iter.second != *intVectorFeatureMapB.at(iter.first))
+            {
+                std::cout << "In Entry " << entry << ", the int vector feature " << iter.first << " differs between the files" << std::endl; 
+
+                std::cout << "A) {";
+                for (const auto iter1 : *iter.second)
+                    std::cout << iter1 << ", ";
+                std::cout << "}" << std::endl;
+
+                std::cout << "B) {";
+                for (const auto iter2 : *intVectorFeatureMapB.at(iter.first))
+                    std::cout << iter2 << ", ";
+                std::cout << "}" << std::endl;
+                return false;
+            }
+        }
+
+        for (const auto iter : floatVectorFeatureMapA)
+        {
+            if (!AreFloatVectorsIdentical(*iter.second, *floatVectorFeatureMapB.at(iter.first)))
+            {
+                std::cout << "In Entry " << entry << ", the float vector feature " << iter.first << " differs between the files"
+                    << std::endl;
+
+                std::cout << "A) {";
+                for (const auto iter1 : *iter.second)
+                    std::cout << iter1 << ", ";
+                std::cout << "}" << std::endl;
+
+                std::cout << "B) {";
+                for (const auto iter2 : *floatVectorFeatureMapB.at(iter.first))
+                    std::cout << iter2 << ", ";
+                std::cout << "}" << std::endl;
+                return false;
+            }
+        }
+    }
+
+    std::cout << "The files are identical." << std::endl;
+    return true;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+bool Helper::DoesFileExist(const std::string &fileName)
+{
+    std::ifstream infile(fileName.c_str());
+    return infile.good();
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+bool Helper::AreFloatVectorsIdentical(const FloatVector &floatVectorA, const FloatVector &floatVectorB)
+{
+    if (floatVectorA.size() != floatVectorB.size())
+    {
+        std::cout << "FloatVectors have different sizes" << std::endl;
+        return false;
+    }
+
+    for (unsigned int entry = 0; entry < floatVectorA.size(); entry++)
+    {
+        if (std::fabs(floatVectorA.at(entry) - floatVectorB.at(entry)) > std::numeric_limits<float>::epsilon())
+        {
+            std::cout << "Entry " << entry << " differs in the vectors (A, B) : (" << floatVectorA.at(entry) << ", " <<
+                floatVectorB.at(entry) << ")" << std::endl;
+
+            return false;
+        }
+    }
+    return true;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 template std::string Helper::ToString(int);
 template std::string Helper::ToString(float);
@@ -402,5 +567,3 @@ template std::string Helper::ToStringPrecision(double, const int);
 template void Helper::Format(TGraphErrors *&pTGraphErrors);
 template void Helper::Format(TH1F *&pTH1F);
 template void Helper::Format(TH2F *&pTH2F);
-
-//==================================================
