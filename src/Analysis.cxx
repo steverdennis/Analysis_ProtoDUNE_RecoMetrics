@@ -42,21 +42,31 @@ int main(int argc, char *argv[])
     Style();
 
     // Particles to make plots for
-    std::vector<Particle> particles = {PROTON, PHOTON, PIPLUS, PIMINUS, KAONPLUS, KAONMINUS};
+    std::vector<Particle> particles = {PROTON, PHOTON, PIPLUS, PIMINUS, KAONPLUS, POSITRON};
 
     // Input files
     EventClassVector eventClassVector;
     std::string inputFiles("");
 
     for (int momentum = 1; momentum <= 7; momentum++)
-        inputFiles += "/r07/dune/sg568/LAr/Jobs/protoDUNE/2019/September/ProtoDUNE_HierarchyMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/" + Helper::ToString(momentum) + "GeV/SpaceCharge/RootFiles/*.root:";
+        inputFiles += "/r07/dune/sg568/LAr/Jobs/protoDUNE/2019/October/Vertexing_Default/AnalysisTag2/mcc11_Pndr/Beam_Cosmics/" + Helper::ToString(momentum) + "GeV/SpaceCharge/RootFiles/Vertexing_Default_Hierarchy_Job_Number_*.root:";
 
-    eventClassVector.emplace_back(inputFiles, "Default");
+    eventClassVector.emplace_back(inputFiles, "Default", "ValidationHierarchy");
+
+    inputFiles = "";
+
+    for (int momentum = 1; momentum <= 7; momentum++)
+        inputFiles += "/r07/dune/sg568/LAr/Jobs/protoDUNE/2019/October/Vertexing/AnalysisTag2/mcc11_Pndr/Beam_Cosmics/" + Helper::ToString(momentum) + "GeV/SpaceCharge/RootFiles/Vertexing_Hierarchy_Job_Number_*.root:";
+
+    eventClassVector.emplace_back(inputFiles, "Updated Vertexing", "ValidationHierarchy");
 
     // Tree variables
     int mcNuanceCode(0), isCorrectTBHierarchy(0), nTargetTBHierarchyLosses(0), nTargetTBHierarchySplits(0), nTargetCRMatches(0), nTargetMatches(0), nTargetPrimaries(0), nTargetGoodTBHierarchyMatches(0), nTargetTBHierarchyMatches(0);
     std::vector<int> *mcPrimaryPdg(nullptr), *mcPrimaryTier(nullptr), *bestMatchPfoPdg(nullptr), *mcPrimaryNHitsTotal(nullptr), *bestMatchPfoNHitsTotal(nullptr), *bestMatchPfoNSharedHitsTotal(nullptr);
     std::vector<float> *mcPrimaryVtxZ(nullptr), *mcPrimaryEndZ(nullptr);
+
+    float recoVertexX(std::numeric_limits<float>::max()), recoVertexY(std::numeric_limits<float>::max()), recoVertexZ(std::numeric_limits<float>::max());
+    float targetVertexX(std::numeric_limits<float>::max()), targetVertexY(std::numeric_limits<float>::max()), targetVertexZ(std::numeric_limits<float>::max());
 
     // Scale Setting
     const int nBins(20), maxBin(20);
@@ -90,6 +100,9 @@ int main(int argc, char *argv[])
     drawClass_PrimaryPur.SetRange(0.f, 1.1f, 0.001f, 1.05f);
     drawClass_PrimaryPur.SetLegend(0.1,0.9,0.825,0.975);
 
+    DrawClass drawClass_VtxDeltaR("Vertex Delta R");
+    drawClass_VtxDeltaR.SetRange(0.f, 100.f, 0.f, 1.0f);
+
     for (EventClass &eventClass : eventClassVector)
     {
         // Histograms for a given data set
@@ -110,6 +123,10 @@ int main(int argc, char *argv[])
         TH1F *pTH1F_MCPrimaries_Matched = new TH1F("MCPrimaries_Matched", "", nBins, 0, maxBin);
         Helper::Format(pTH1F_MCPrimaries_Matched);
         pTH1F_MCPrimaries_Matched->GetXaxis()->SetTitle("nPrimaries");
+
+        TH1F *pTH1F_VtxDeltaR = new TH1F("VtxDeltaR", "", 1000, 0, 100);
+        Helper::Format(pTH1F_MCPrimaries_Matched);
+        pTH1F_VtxDeltaR->GetXaxis()->SetTitle("Delta R [cm]");
 
         typedef std::map<Particle, TH1F*> ParticleToHistMap;
         ParticleToHistMap particleToHistMap_BeamMCPrimaryNHitsTotal;
@@ -173,6 +190,13 @@ int main(int argc, char *argv[])
         pTChain->SetBranchAddress("bestMatchPfoNHitsTotal", &bestMatchPfoNHitsTotal);
         pTChain->SetBranchAddress("bestMatchPfoNSharedHitsTotal", &bestMatchPfoNSharedHitsTotal);
 
+        pTChain->SetBranchAddress("recoVertexX", &recoVertexX);
+        pTChain->SetBranchAddress("recoVertexY", &recoVertexY);
+        pTChain->SetBranchAddress("recoVertexZ", &recoVertexZ);
+        pTChain->SetBranchAddress("targetVertexX", &targetVertexX);
+        pTChain->SetBranchAddress("targetVertexY", &targetVertexY);
+        pTChain->SetBranchAddress("targetVertexZ", &targetVertexZ);
+
         unsigned int nEntries(pTChain->GetEntries());
         for (unsigned int entry = 0; entry < nEntries; entry++)
         {
@@ -181,6 +205,13 @@ int main(int argc, char *argv[])
             // Only consider test beam interactions
             if (mcNuanceCode != 2001)
                 continue;
+
+            const float vtxDeltaX(recoVertexX - targetVertexX);
+            const float vtxDeltaY(recoVertexY - targetVertexY);
+            const float vtxDeltaZ(recoVertexZ - targetVertexZ);
+            const float vtxDeltaR(std::sqrt(vtxDeltaX*vtxDeltaX + vtxDeltaY*vtxDeltaY + vtxDeltaZ*vtxDeltaZ));
+
+            pTH1F_VtxDeltaR->Fill(vtxDeltaR);
 
             // Find parent
             unsigned int parentCounter(std::numeric_limits<int>::max());
@@ -198,7 +229,6 @@ int main(int argc, char *argv[])
                 std::cout << "Missing parent" << std::endl;
                 continue;
             }
-
             const int mcParentPdg(mcPrimaryPdg->at(parentCounter));
             const int mcParentNHits(mcPrimaryNHitsTotal->at(parentCounter));
 
@@ -219,13 +249,10 @@ int main(int argc, char *argv[])
 
             // Loop over the primaries
             int nTrk(0), nShw(0);
-            bool skip(false), allPrimariesReconstructed(true);
+            bool skip(false);
 
             for (unsigned int counter = 0; counter < mcPrimaryPdg->size(); counter++)
             {
-                if (bestMatchPfoPdg->at(counter) == 0)
-                    allPrimariesReconstructed = false;
-
                 const int pdg(mcPrimaryPdg->at(counter));
                 const int nMCHits(mcPrimaryNHitsTotal->at(counter));
                 Particle particle(Helper::GetParticleType(mcPrimaryPdg->at(counter))); // Should check first, but shouldn't break
@@ -273,7 +300,7 @@ int main(int argc, char *argv[])
             pTH1F_MCPrimaries->Fill(nTrk + nShw);
             pTH2F_MCTrkShw->Fill(nTrk, nShw);
 
-            if (allPrimariesReconstructed && (nTargetGoodTBHierarchyMatches == nTargetTBHierarchyMatches) && (nTargetGoodTBHierarchyMatches >= nTargetPrimaries) && (nTargetCRMatches == 0) && (nTargetTBHierarchySplits == 0) && (nTargetTBHierarchyLosses == 0)) // Previously: if (isCorrectTBHierarchy)
+            if (isCorrectTBHierarchy)
             {
                 pTH1F_MCPrimaries_Matched->Fill(nTrk + nShw);
                 pTH2F_MCTrkShw_Matched->Fill(nTrk, nShw);
@@ -312,10 +339,13 @@ int main(int argc, char *argv[])
         drawClass.AddHisto(pTH1F_MCPrimaries, eventClass.GetDescription());
         drawClass_Matched.AddHisto(pTH1F_MCPrimaries_Matched, eventClass.GetDescription());
 
+        drawClass_VtxDeltaR.AddHisto(pTH1F_VtxDeltaR, eventClass.GetDescription());
+
         delete pTH1F_MCPrimaries;
         delete pTH1F_MCPrimaries_Matched;
         delete pTH2F_MCTrkShw;
         delete pTH2F_MCTrkShw_Matched;
+        delete pTH1F_VtxDeltaR;
 
         for (const auto &iter : particleToHistMap_BeamMCPrimaryNHitsTotal)
             delete iter.second;
@@ -331,6 +361,7 @@ int main(int argc, char *argv[])
     drawClass_BeamParticleEff2D.Draw();
     drawClass.Draw();
     drawClass_Matched.Draw();
+    drawClass_VtxDeltaR.Draw();
 
     drawClass_PrimaryEff.Draw();
     drawClass_PrimaryComp.Draw();

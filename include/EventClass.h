@@ -23,7 +23,7 @@ public:
     /**
      *  @brief  Constructor
      */
-    EventClass(const std::string &rootFilePath, const std::string &verboseString, const int momentum = 0, const std::string treeName = "Validation");
+    EventClass(const std::string &rootFilePath, const std::string &verboseString, const std::string treeName = "Validation");
 
     /**
      *   @brief  Destructor
@@ -69,7 +69,6 @@ private:
     std::string  m_rootFilePath;               ///< Location of root files
     StringVector m_rootFilePaths;              ///< Location of root file paths
     std::string  m_verboseString;              ///< Verbose string describing reconstruction
-    int          m_momentum;                   ///< Momentum of beam particles in sample
     std::string  m_treeName;                   ///< Name of root tree
     TChain      *m_pTChain;                    ///< TChain of root files
 };
