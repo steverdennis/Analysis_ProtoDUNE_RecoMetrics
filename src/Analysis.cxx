@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
             const int mcParentPdg(mcPrimaryPdg->at(parentCounter));
             const int mcParentNHits(mcPrimaryNHitsTotal->at(parentCounter));
 
-            // Veto events if parent produces no hits, or if primary interaction is outside the vertex
+            // Veto events if parent produces no hits, or if primary interaction vertex is outside the TPC
             if (mcParentNHits < 1)
                 continue;
 
@@ -249,7 +249,6 @@ int main(int argc, char *argv[])
 
             // Loop over the primaries
             int nTrk(0), nShw(0);
-            bool skip(false);
 
             for (unsigned int counter = 0; counter < mcPrimaryPdg->size(); counter++)
             {
@@ -275,15 +274,6 @@ int main(int argc, char *argv[])
 
                 }
 
-                // If parent, skip plotting if only produces tiny number of hits (100)
-                if (counter == parentCounter)
-                {
-                    if (mcPrimaryNHitsTotal->at(counter) < 100)
-                        skip = true;
-
-                    continue;
-                }
-
                 // Count daughter particle types
                 if (std::fabs(pdg) == 11 || pdg == 22)
                 {
@@ -294,8 +284,6 @@ int main(int argc, char *argv[])
                     nTrk++;
                 }
             }
-
-            if (skip) continue;
 
             pTH1F_MCPrimaries->Fill(nTrk + nShw);
             pTH2F_MCTrkShw->Fill(nTrk, nShw);
