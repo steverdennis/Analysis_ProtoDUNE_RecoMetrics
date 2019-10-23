@@ -38,64 +38,24 @@ using namespace analysis;
 
 int main(int argc, char *argv[])
 {
-//    TApplication *pTApplication = new TApplication("Analysis", &argc,argv);
-//    if (!pTApplication)
-//    {
-//        std::cout << "TApplication problem." << std::endl;
-//    }
+    TApplication *pTApplication = new TApplication("DataAnalysis", &argc, argv);
+
+    if (!pTApplication)
+        std::cout << "TApplication problem." << std::endl;
 
     gROOT->SetBatch();
     Style();
 
     EventClassVector eventClassVector;
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag3/Data_Run_5834_Momentum_0p3GeV/RootFiles/*.root", "Run 5834, 0.3 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag3/Data_Run_5826_Momentum_0p5GeV/RootFiles/*.root", "Run 5826, 0.5 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag3/Data_Run_5387_Momentum_1GeV/RootFiles/*.root", "Run 5387, 1 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag3/Data_Run_5430_Momentum_2GeV/RootFiles/*.root", "Run 5430, 2 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag3/Data_Run_5777_Momentum_3GeV/RootFiles/*.root", "Run 5777, 3 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag3/Data_Run_5758_Momentum_6GeV/RootFiles/*.root", "Run 5758, 6 GeV");
-    eventClassVector.emplace_back("/r05/dune/sg568/LAr/Jobs/protoDUNE/2019/January/ProtoDUNE_Data/AnalysisTag3/Data_Run_5145_Momentum_7GeV/RootFiles/*.root", "Run 5145, 7 GeV");
-
-    EventClassVector mcEventClassVector;
-//    mcEventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/1GeV/FluidFlow/RootFiles/*.root", "mcc11, Fluid Flow, 1 GeV", 1);
-//    mcEventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/3GeV/FluidFlow/RootFiles/*.root", "mcc11, Fluid Flow, 3 GeV", 3);
-//    mcEventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/5GeV/FluidFlow/RootFiles/*.root", "mcc11, Fluid Flow, 5 GeV", 5);
-//    mcEventClassVector.emplace_back("/r06/dune/sg568/LAr/Jobs/protoDUNE/2018/December/ProtoDUNE_RecoMetrics/AnalysisTag1/mcc11_Pndr/Beam_Cosmics/7GeV/FluidFlow/RootFiles/*.root", "mcc11, Fluid Flow, 7 GeV", 7);
-
-/*
- isTriggered     = 1
- beamMomentum    = 6.3864
- beamPositionX   = -26.4815
- beamPositionY   = 424.051
- beamPositionZ   = 0
- beamDirectionX  = 0.174434
- beamDirectionY  = 0.193961
- beamDirectionZ  = -0.965376
- tof             = 154.395
- ckov0Status     = -2147483648
- ckov1Status     = -2147483648
- nBeamPfos       = 1
- nShwBeamPfos    = 0
- nTrkBeamPfos    = 1
- nHitsRecoU      = (vector<int>*)0x4ee7e10
- nHitsRecoV      = (vector<int>*)0x5464140
- nHitsRecoW      = (vector<int>*)0x52ae420
- nHitsRecoTotal  = (vector<int>*)0x53302c0
- recoParticleId  = (vector<int>*)0x527ef80
- recoDirectionX  = (vector<float>*)0x5303fc0
- recoDirectionY  = (vector<float>*)0x511d9c0
- recoDirectionZ  = (vector<float>*)0x53040c0
-*/
+    eventClassVector.emplace_back("/r07/dune/sg568/LAr/Jobs/protoDUNE/2019/October/T0Distribution/AnalysisTag1/mcc12_Pndr/Beam_Cosmics/1GeV/SpaceCharge/RootFiles/T0Distribution_Job_Number_*.root", "Simulation");
 
     // Data
-    int isTriggered(std::numeric_limits<int>::max()), nBeamPfos(std::numeric_limits<int>::max()), ckov0Status(std::numeric_limits<int>::max()), ckov1Status(std::numeric_limits<int>::max());
+    int isTriggered(std::numeric_limits<int>::max()), nBeamPfos(std::numeric_limits<int>::max()), ckov0Status(std::numeric_limits<int>::max()), ckov1Status(std::numeric_limits<int>::max()), nCosmicRayPfos(0);
     float beamMomentum(std::numeric_limits<float>::max()), tof(std::numeric_limits<float>::max());
     float beamDirectionX(std::numeric_limits<float>::max()), beamDirectionY(std::numeric_limits<float>::max()), beamDirectionZ(std::numeric_limits<float>::max());
     float beamPositionX(std::numeric_limits<float>::max()), beamPositionY(std::numeric_limits<float>::max()), beamPositionZ(std::numeric_limits<float>::max());
-    std::vector<float> *recoDirectionX(nullptr), *recoDirectionY(nullptr), *recoDirectionZ(nullptr);
-    std::vector<int> *nHitsRecoTotal(nullptr);
-    int nCosmicRayPfos(0);
-    std::vector<float> *cosmicRayX0s(nullptr);
+    FloatVector *recoDirectionX(nullptr), *recoDirectionY(nullptr), *recoDirectionZ(nullptr), *cosmicRayX0s(nullptr);
+    IntVector *nHitsRecoTotal(nullptr);
 
     const float cmPerTick(0.0802814);
     const float nsPerTick(500);
@@ -146,7 +106,7 @@ int main(int argc, char *argv[])
     drawClass_NCosmicRayPfos.SetRange(0.f, 200.f, 0.f, 0.f);
 
     DrawClass drawClass_StitchedT0("Stitched T0");
-    drawClass_StitchedT0.SetRange(-1000.f, 1000.f, 0.f, 0.f);
+    drawClass_StitchedT0.SetRange(-2750.f, 3000.f, 0.f, 0.001f);
 
     const int nBins(100), maxBin(10);
 
@@ -262,7 +222,7 @@ int main(int argc, char *argv[])
         Helper::Format(pTH1F_NCosmicRayPfos);
         pTH1F_NCosmicRayPfos->GetXaxis()->SetTitle("Number of Reconstructred Cosmic Rays");
 
-        TH1F *pTH1F_StitchedT0 = new TH1F("StitchedT0", "", 100, -5000, 5000);
+        TH1F *pTH1F_StitchedT0 = new TH1F("StitchedT0", "", 7000, -3500, 3500);
         Helper::Format(pTH1F_StitchedT0);
         pTH1F_StitchedT0->GetXaxis()->SetTitle("Stitched T_{0} [ns]");
 
@@ -448,74 +408,6 @@ int main(int argc, char *argv[])
             delete iter.second;
         for (const auto &iter : particleToHistMap_BeamMCPrimaryMomentumTotal_Matched)
             delete iter.second;
-    }
-
-    // MC
-    int mcNuanceCode(0), nNuMatches(0);
-    std::vector<float> *mcPrimaryPX(nullptr), *mcPrimaryPY(nullptr), *mcPrimaryPZ(nullptr);
-
-    for (EventClass &eventClass : mcEventClassVector)
-    {
-        // Beam Efficiency vs Momentum
-        TH1F *pTH1F_BeamMCPrimaryMomentum = new TH1F("BeamMCPrimaryMomentum", "", nBins, 0, maxBin);
-        Helper::Format(pTH1F_BeamMCPrimaryMomentum);
-          TH1F *pTH1F_NCosmicRayPfos = new TH1F("NCosmicRayPfos", "", 200, 0, 200);
-        Helper::Format(pTH1F_NCosmicRayPfos);
-        pTH1F_NCosmicRayPfos->GetXaxis()->SetTitle("Number of Reconstructred Cosmic Rays");
-
-        TH1F *pTH1F_BeamMCPrimaryMomentum_Matched = new TH1F("BeamMCPrimaryMomentum_Matched", "", nBins, 0, maxBin);
-        Helper::Format(pTH1F_BeamMCPrimaryMomentum_Matched);
-        pTH1F_BeamMCPrimaryMomentum_Matched->GetXaxis()->SetTitle("Beam Momentum [GeV]");
-        pTH1F_BeamMCPrimaryMomentum_Matched->SetLineColor(kBlue);
-
-//        TH1F *pTH1F_NCosmicRayPfos = new TH1F("NCosmicRayPfos", "", 200, 0, 200);
-//        Helper::Format(pTH1F_NCosmicRayPfos);
-//        pTH1F_NCosmicRayPfos->GetXaxis()->SetTitle("Number of Reconstructred Cosmic Rays");
-
-//        TH1F *pTH1F_StitchedT0 = new TH1F("StitchedT0", "", 1000, -500, 500);
-//        Helper::Format(pTH1F_StitchedT0);
-//        pTH1F_StitchedT0->GetXaxis()->SetTitle("Stitched T_{0} [ns]");
-
-        TChain *pTChain = eventClass.GetTChain();
-
-        pTChain->SetBranchAddress("mcNuanceCode", &mcNuanceCode);
-        pTChain->SetBranchAddress("nTargetNuMatches", &nNuMatches);
-        pTChain->SetBranchAddress("mcPrimaryPX", &mcPrimaryPX);
-        pTChain->SetBranchAddress("mcPrimaryPY", &mcPrimaryPY);
-        pTChain->SetBranchAddress("mcPrimaryPZ", &mcPrimaryPZ);
-//        pTChain->SetBranchAddress("nCosmicRayPfos", &nCosmicRayPfos);
-//        pTChain->SetBranchAddress("cosmicRayX0s", &cosmicRayX0s);
-
-        unsigned int nEntries(pTChain->GetEntries());
-        for (unsigned int entry = 0; entry < nEntries; entry++)
-        {
-            pTChain->GetEntry(entry);
-
-            if (mcNuanceCode != 2001)
-                continue;
-
-            if (mcPrimaryPX->size() != 1 || mcPrimaryPY->size() != 1 || mcPrimaryPZ->size() != 1)
-                continue;
-
-            const float momentum(std::sqrt(mcPrimaryPX->front() * mcPrimaryPX->front() + mcPrimaryPY->front() * mcPrimaryPY->front() + mcPrimaryPZ->front() * mcPrimaryPZ->front()));
-
-            pTH1F_BeamMCPrimaryMomentum->Fill(momentum);
-            if (nNuMatches > 0)
-                pTH1F_BeamMCPrimaryMomentum_Matched->Fill(momentum);
-        }
-
-        TGraphErrors *pTGraphErrors_BeamMomentumEfficiency = Helper::MakeEfficiency(pTH1F_BeamMCPrimaryMomentum, pTH1F_BeamMCPrimaryMomentum_Matched, "BeamMomentumEfficiency", 50);
-        Helper::Format(pTGraphErrors_BeamMomentumEfficiency);
-        pTGraphErrors_BeamMomentumEfficiency->GetXaxis()->SetTitle("Momentum [GeV]");
-        pTGraphErrors_BeamMomentumEfficiency->GetYaxis()->SetTitle("Efficiency");
-        pTGraphErrors_BeamMomentumEfficiency->GetYaxis()->SetRangeUser(0,1);
-        pTGraphErrors_BeamMomentumEfficiency->GetYaxis()->SetDecimals();
-        const int nEvtsTotal(pTH1F_BeamMCPrimaryMomentum->GetEntries());
-        drawClass_BeamParticleEff.AddGraph(pTGraphErrors_BeamMomentumEfficiency, eventClass.GetDescription() + ", NEvts " + Helper::ToString(nEvtsTotal));
-
-        delete pTH1F_BeamMCPrimaryMomentum;
-        delete pTH1F_BeamMCPrimaryMomentum_Matched;
-        delete pTGraphErrors_BeamMomentumEfficiency;
     }
 
     drawClass_BeamParticleEff.Draw();
