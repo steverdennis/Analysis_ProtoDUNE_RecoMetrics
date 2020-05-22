@@ -30,7 +30,7 @@ FILE(GLOB_RECURSE SRCS *.cc)
 
 ### LIBRARY AND TOOLS #######################################################
 
-SET( CMAKE_CXX_FLAGS "-g -Wall -std=c++14" )
+SET( CMAKE_CXX_FLAGS "-g -Wall -std=c++17" )
 
 ADD_EXECUTABLE(Analysis ${SRCS})
 
