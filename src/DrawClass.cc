@@ -15,7 +15,9 @@
 #include "TChain.h"
 #include "TLegend.h"
 #include "TPaveText.h"
+#include "TLatex.h"
 
+#include "Style.h"
 #include "Helper.h"
 
 namespace analysis
@@ -198,7 +200,7 @@ void DrawClass::Draw() const
     int counter(0);
 
     TLegend *pTLegend = new TLegend(m_legLowX, m_legLowY, m_legHighX, m_legHighY);
-    pTLegend->SetTextSize(0.04);
+    pTLegend->SetTextSize(0.06);
     pTLegend->SetNColumns(m_nColumns);
 
     if (!m_legInfo.empty())
@@ -362,10 +364,7 @@ void DrawClass::Draw() const
             }
 
             TPaveText *pTPaveText = new TPaveText(m_legLowX, m_legLowY, m_legHighX, m_legHighY, "NDC");
-            pTPaveText->SetTextSize(0.04);
-            pTPaveText->SetFillStyle(0);
-            pTPaveText->SetLineWidth(0);
-            pTPaveText->SetShadowColor(0);
+            StylePave(*pTPaveText);
             pTPaveText->AddText(iter->GetDescription().c_str());
             pTPaveText->Draw();
 
@@ -378,6 +377,10 @@ void DrawClass::Draw() const
 
     if (std::fabs(m_momentum) > std::numeric_limits<float>::epsilon())
         name += "_" + Helper::ToStringPrecision(m_momentum, 0) + "_GeV_Beam_Cosmics";
+        
+    // Make a protoDUNE label
+    TPaveText protodune_label = MakeProtoDUNELabel();
+    protodune_label.Draw();
 
     std::cout << "Saving name : " << name << std::endl;
 
