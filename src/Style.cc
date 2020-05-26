@@ -1,95 +1,179 @@
 #include "Style.h"
 
+#include "TStyle.h"
+#include "TGaxis.h"
+
 void Style()
 {
-  gROOT->SetStyle("Plain"); /*Default white background for all plots*/
-  /* set bkg color of all to kWhite: white, but not 0*/
-  gStyle->SetTitleFillColor(kWhite);
-  gStyle->SetFillColor(1);
-  gStyle->SetFillStyle(1001);   // solid
-  gStyle->SetFrameFillColor(0);
-  gStyle->SetFrameBorderMode(0);
-  gStyle->SetPadBorderMode(0);
-  gStyle->SetPadColor(0);
-  gStyle->SetCanvasBorderMode(0);
-  gStyle->SetCanvasColor(0);
-  gStyle->SetStatColor(0);
-  gStyle->SetLegendBorderSize(0);
 
-  // Use times new roman, precision 2 
-  Int_t lhcbFont        = 132;  // Old LHCb style: 62;
-  // Line thickness
-  Double_t lhcbWidth    = 2.00; // Old LHCb style: 3.00;
-  // Text size
-  Double_t lhcbTSize    = 0.03; 
+  // This is the protoDUNE style file
 
-  // use large fonts
-  gStyle->SetTextFont(lhcbFont);
-  gStyle->SetTextSize(lhcbTSize);
-  gStyle->SetLabelFont(lhcbFont,"x");
-  gStyle->SetLabelFont(lhcbFont,"y");
-  gStyle->SetLabelFont(lhcbFont,"z");
-  gStyle->SetLabelSize(lhcbTSize,"x");
-  gStyle->SetLabelSize(lhcbTSize,"y");
-  gStyle->SetLabelSize(lhcbTSize,"z");
-  gStyle->SetTitleFont(lhcbFont);
-  gStyle->SetTitleFont(lhcbFont,"x");
-  gStyle->SetTitleFont(lhcbFont,"y");
-  gStyle->SetTitleFont(lhcbFont,"z");
-  gStyle->SetTitleSize(1.2*lhcbTSize,"x");
-  gStyle->SetTitleSize(1.2*lhcbTSize,"y");
-  gStyle->SetTitleSize(1.2*lhcbTSize,"z");
-  gStyle->SetLegendFont(lhcbFont); 
+  TStyle* protoDUNEStyle = new  TStyle("protoDUNEStyle", "ProtoDUNE Style");
 
-  // use medium bold lines and thick markers
-  gStyle->SetLineWidth(lhcbWidth);
-  gStyle->SetFrameLineWidth(lhcbWidth);
-  gStyle->SetHistLineWidth(lhcbWidth);
-  gStyle->SetFuncWidth(lhcbWidth);
-  gStyle->SetGridWidth(lhcbWidth);
-  gStyle->SetLineStyleString(2,"[12 12]"); // postscript dashes
-  gStyle->SetMarkerStyle(20);
-  gStyle->SetMarkerSize(1.0);
+  // Colors
 
-  gStyle->SetTitleFont(lhcbFont,"title");
-  gStyle->SetLegendBorderSize(0);
-  gStyle->SetOptStat(0);  
+  //set the background color to white
+  protoDUNEStyle->SetFillColor(10);
+  protoDUNEStyle->SetFrameFillColor(10);
+  protoDUNEStyle->SetCanvasColor(10);
+  protoDUNEStyle->SetPadColor(10);
+  protoDUNEStyle->SetTitleFillColor(10);
+  protoDUNEStyle->SetStatColor(10);
 
-  gStyle->SetPaperSize(20,26);
-  gStyle->SetPadTopMargin(0.1);
-  gStyle->SetPadRightMargin(0.1); // increase for colz plots (0.2) dhynds increased from 0.05
-  gStyle->SetPadBottomMargin(0.1);
-  gStyle->SetPadLeftMargin(0.1);
+  //dont put a colored frame around the plots
+  protoDUNEStyle->SetFrameBorderMode(0);
+  protoDUNEStyle->SetCanvasBorderMode(0);
+  protoDUNEStyle->SetPadBorderMode(0);
 
-  const Int_t NRGBs = 5;
-//  const Int_t NCont = 255;
-  const Int_t NCont = 99;
-  Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-  Double_t red2[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
-  Double_t green2[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
-  Double_t blue2[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
-  TColor::CreateGradientColorTable(NRGBs, stops, red2, green2, blue2, NCont);
-  gStyle->SetNumberContours(NCont);
+  //use the primary color palette
+  protoDUNEStyle->SetPalette(1,0);
 
-  Int_t ci = 10001; // color index
-  TColor *orange = new TColor(ci, 1, 0.55, 0);
-  Int_t ci2 = 10002; // color index
-  TColor *violet = new TColor(ci2, 0.62, 0, 1);
-  Int_t ci3 = 10003; // color index
-  TColor *lightblue = new TColor(ci3, 0, 0.75, 1);
-  Int_t ci4 = 10004; // color index
-  TColor *gold = new TColor(ci4, 1, 0.843 ,0);
+  //set the default line color for a histogram to be black
+  protoDUNEStyle->SetHistLineColor(kBlack);
 
-  if (!orange || !violet || !lightblue || !gold)
-    std::cout << "Problem setting user-defined colours." << std::endl;
+  //set the default line color for a fit function to be red
+  protoDUNEStyle->SetFuncColor(kRed);
+
+  //make the axis labels black
+  protoDUNEStyle->SetLabelColor(kBlack,"xyz");
+
+  //set the default title color to be black
+  protoDUNEStyle->SetTitleColor(kBlack);
+
+  // Sizes
+
+  //set the margins
+  protoDUNEStyle->SetPadBottomMargin(0.125);
+  protoDUNEStyle->SetPadTopMargin(0.075);
+  protoDUNEStyle->SetPadLeftMargin(0.1);
+  protoDUNEStyle->SetPadRightMargin(0.1);
+
+  //set axis label and title text sizes
+  protoDUNEStyle->SetLabelSize(0.045,"xy");
+  protoDUNEStyle->SetLabelSize(0.035,"z");
+  protoDUNEStyle->SetLabelOffset(0.005,"xy");
+  //protoDUNEStyle->SetLabelOffset(0.005,"z");
+  protoDUNEStyle->SetTitleSize(0.05,"xyz");
+  protoDUNEStyle->SetTitleOffset(1,"x");
+  protoDUNEStyle->SetTitleOffset(1,"yz");
+  protoDUNEStyle->SetStatFontSize(0.05);
+  protoDUNEStyle->SetTextSize(0.05);
+  protoDUNEStyle->SetTitleBorderSize(0);
+  protoDUNEStyle->SetStatBorderSize(0);
+
+  //set line widths
+  protoDUNEStyle->SetHistLineWidth(3);
+  protoDUNEStyle->SetFrameLineWidth(2);
+  protoDUNEStyle->SetFuncWidth(2);
+
+  // Misc
+
+  //align the titles to be centered
+  //protoDUNEStyle->SetTitleAlign(22);
+
+  //set the number of divisions to show
+  protoDUNEStyle->SetNdivisions(506, "xy");
+
+  //turn off xy grids
+  protoDUNEStyle->SetPadGridX(0);
+  protoDUNEStyle->SetPadGridY(0);
 
   //set the tick mark style
-  gStyle->SetPadTickX(1);
-  gStyle->SetPadTickY(1);
+  protoDUNEStyle->SetPadTickX(1);
+  protoDUNEStyle->SetPadTickY(1);
 
-  gStyle->SetNdivisions(505,"x");
-  gStyle->SetNdivisions(510,"y");
+  //show the fit parameters in a box
+  protoDUNEStyle->SetOptFit(1111);
+
+  //turn off all other stats
+  protoDUNEStyle->SetOptStat(0000000);
+
+  //marker settings
+  protoDUNEStyle->SetMarkerStyle(20);
+  protoDUNEStyle->SetMarkerSize(0.9);
+
+  // Fonts
+  const int kProtoDUNEFont = 42;
+
+  protoDUNEStyle->SetStatFont(kProtoDUNEFont);
+  protoDUNEStyle->SetLabelFont(kProtoDUNEFont,"xyz");
+  protoDUNEStyle->SetTitleFont(kProtoDUNEFont,"xyz");
+  protoDUNEStyle->SetTitleFont(kProtoDUNEFont,"");
+  protoDUNEStyle->SetTextFont(kProtoDUNEFont);
+
+  // ---------------------------------------------------------
+  // Additions from George 26/06/2019
+  protoDUNEStyle->SetCanvasBorderSize(0);
+  protoDUNEStyle->SetFrameBorderSize(0);
+  protoDUNEStyle->SetDrawBorder(0);
+  protoDUNEStyle->SetTitleBorderSize(0);
+
+  // Set the size (in pixels) of the small lines drawn at the end of the error bars
+  protoDUNEStyle->SetEndErrorSize(4);
+
+  // Set option to strip decimals when drawing axis labels.
+  protoDUNEStyle->SetStripDecimals(kFALSE);
+
+  protoDUNEStyle->SetLegendBorderSize(0);
+  protoDUNEStyle->SetLegendFont(kProtoDUNEFont);
+
+  protoDUNEStyle->SetLabelOffset(0.015, "x");
+  protoDUNEStyle->SetLabelOffset(0.015, "y");
+  protoDUNEStyle->SetLabelOffset(0.01, "z");
+
+  protoDUNEStyle->SetTitleStyle(0);
+  protoDUNEStyle->SetTitleFont(kProtoDUNEFont, "pad");
+  protoDUNEStyle->SetTitleX(0.1f);
+  protoDUNEStyle->SetTitleY(.98f);
+  protoDUNEStyle->SetTitleW(0.8f);
+  protoDUNEStyle->SetLineStyleString(2, "[12 12]"); // postscript dashes
+
+  // get rid of X error bars and y error bar caps
+  protoDUNEStyle->SetErrorX(0.001);
+
+  protoDUNEStyle->SetNumberContours(255);
+  protoDUNEStyle->SetPalette(kBird);
+
+
+  // ---------------------------------------------------------
+  //done
+  protoDUNEStyle->cd();
 
   gROOT->ForceStyle();
+  //~ gStyle->ls();
+
+/*
+  if (gROOT->GetVersionInt()>51200) {
+    TColor::InitializeColors();
+    const Int_t NRGBs = 5;
+    const Int_t NCont = 255;
+    Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+    Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+    Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+    Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->SetNumberContours(NCont);
+  }
+*/
+
+
+  // Avoid too many decimal places in the axis labels
+  TGaxis::SetMaxDigits(4);
 }
 
+void StylePave(TPaveText & pave)
+{
+  pave.SetTextSize(0.06);
+  pave.SetFillStyle(0);
+  pave.SetLineWidth(0);
+  pave.SetShadowColor(0);
+}
+
+TPaveText MakeProtoDUNELabel()
+{
+  TPaveText protodune_label(0.6,0.9,1.0,0.9,"NDC");
+  StylePave(protodune_label);
+  protodune_label.SetTextAlign(kHAlignRight);
+  protodune_label.AddText("ProtoDUNE-SP");
+  return protodune_label;
+}
